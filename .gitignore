@@ -5,6 +5,7 @@ DerivedData/
 *.xcuserdata/
 *.xcuserdatad/
 *.xcodeproj/xcuserdata/
+KickOFF.xcodeproj/xcuserdata/
 
 # Swift Package Manager
 .build/
