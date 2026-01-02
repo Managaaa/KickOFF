@@ -1,15 +1,111 @@
 import SwiftUI
 
 struct RegistrationView: View {
+    //MARK: - Properties
     @StateObject var viewModel: RegistrationViewModel
     
     let onLogin: () -> Void
     
+    //MARK: - Body
     var body: some View {
-        Button {
-            onLogin()
-        } label: {
-            Text("Go To Login")
+        ZStack(alignment: .topLeading) {
+            Color.customBackground
+                .ignoresSafeArea()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 40) {
+                    Image(.logo)
+                        .resizable()
+                        .frame(width: 150, height: 20)
+                    
+                    VStack(alignment: .leading, spacing: 50) {
+                        Text("რეგისტრაცია")
+                            .font(.custom("TBCContracticaCAPS-Black", size: 20))
+                            .foregroundStyle(.white)
+                        
+                        VStack(spacing: 75) {
+                            VStack(spacing: 60) {
+                                ReusableTextField(
+                                    placeholder: "სახელი*",
+                                    isSecure: false,
+                                    text: $viewModel.name,
+                                    errorMessage: viewModel.nameError,
+                                    showError: viewModel.nameError != nil
+                                )
+                                .onChange(of: viewModel.name) {
+                                    viewModel.validateUserName()
+                                }
+                                
+                                ReusableTextField(
+                                    placeholder: "ელფოსტა*",
+                                    isSecure: false,
+                                    text: $viewModel.email,
+                                    errorMessage: viewModel.emailError,
+                                    showError: viewModel.emailError != nil
+                                )
+                                .onChange(of: viewModel.email) {
+                                    viewModel.validateEmail()
+                                }
+                                
+                                ReusableTextField(
+                                    placeholder: "პაროლი*",
+                                    isSecure: true,
+                                    text: $viewModel.password,
+                                    errorMessage: viewModel.passwordError,
+                                    showError: viewModel.emailError != nil
+                                )
+                                .onChange(of: viewModel.password) {
+                                    viewModel.validatePassword()
+                                }
+                                
+                                ReusableTextField(
+                                    placeholder: "დააზუსტე პაროლი*",
+                                                  isSecure: true,
+                                    text: $viewModel.confirmPassword,
+                                    errorMessage: viewModel.confirmPasswordError,
+                                    showError: viewModel.emailError != nil
+                                )
+                                .onChange(of: viewModel.confirmPassword) {
+                                    viewModel.validateConfirmPassword()
+                                }
+                            }
+                            
+                            ReusableMainButton(title: "რეგისტრაცია", action: {
+                                viewModel.validateAll()
+                                if viewModel.nameError == nil && viewModel.emailError == nil && viewModel.passwordError == nil && viewModel.confirmPasswordError == nil {
+                                    onLogin()
+                                } else {
+                                    print("errori gak dzma")
+                                }
+                            })
+                            
+                            VStack(spacing: 30) {
+                                orBorderView()
+                                GoogleAndAppleSignUp(onGoogleTapped: {}, onAppleTapped: {})
+                                
+                                HStack(spacing: 3) {
+                                    Text("უკვე გაქვს ანგარიში?")
+                                        .font(.custom("TBCContracticaCAPS-Medium", size: 12))
+                                        .foregroundStyle(.white)
+                                    Button {
+                                        onLogin()
+                                    } label: {
+                                        Text("ავტორიზაცია")
+                                            .font(.custom("TBCContracticaCAPS-Bold", size: 12))
+                                            .foregroundStyle(.customGreen)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 30)
+                .padding(.top, 30)
+            }
+            .scrollDismissesKeyboard(.interactively)
         }
     }
+}
+
+#Preview {
+    RegistrationView(viewModel: RegistrationViewModel(), onLogin: {})
 }
