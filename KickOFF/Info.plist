@@ -2,6 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>TBCContracticaCAPS-Regular.ttf</string>
+		<string>TBCContracticaCAPS-Bold.ttf</string>
+		<string>TBCContracticaCAPS-Book.ttf</string>
+		<string>TBCContracticaCAPS-Light.ttf</string>
+		<string>TBCContracticaCAPS-Medium.ttf</string>
+		<string>TBCContracticaCAPS-Black.ttf</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
