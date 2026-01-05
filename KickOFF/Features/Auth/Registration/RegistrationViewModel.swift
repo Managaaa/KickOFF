@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import Firebase
 
 class RegistrationViewModel: ObservableObject {
     //MARK: - Properties
@@ -12,6 +13,17 @@ class RegistrationViewModel: ObservableObject {
     @Published var emailError: String? = nil
     @Published var passwordError: String? = nil
     @Published var confirmPasswordError: String? = nil
+    @Published var errorMessage: String? = nil
+    
+    var onSuccess: (() -> Void)?
+    var onLoadingStateChanged: ((Bool) -> Void)?
+    
+    private let authService: FirebaseAuthService
+    
+    //MARK: - Init
+    init(authService: FirebaseAuthService = .shared) {
+        self.authService = authService
+    }
     
     //MARK: - Computed Properties
     var isNameValid: Bool {
@@ -33,7 +45,7 @@ class RegistrationViewModel: ObservableObject {
     //MARK: - Validations
     func validateUserName() {
         if !isNameValid {
-            nameError = AuthError.emptyName.message
+            nameError = ValidationError.emptyName.message
         } else {
             nameError = nil
         }
@@ -41,7 +53,7 @@ class RegistrationViewModel: ObservableObject {
     
     func validateEmail() {
         if !isEmailValid {
-            emailError = AuthError.invalidEmail.message
+            emailError = ValidationError.invalidEmail.message
         } else {
             emailError = nil
         }
@@ -49,7 +61,7 @@ class RegistrationViewModel: ObservableObject {
     
     func validatePassword() {
         if !isPasswordValid {
-            passwordError = AuthError.invalidPassword.message
+            passwordError = ValidationError.invalidPassword.message
         } else {
             passwordError = nil
         }
@@ -57,7 +69,7 @@ class RegistrationViewModel: ObservableObject {
     
     func validateConfirmPassword() {
         if !isConfirmPasswordValid {
-            confirmPasswordError = AuthError.passwordsDoNotMatch.message
+            confirmPasswordError = ValidationError.passwordsDoNotMatch.message
         } else {
             confirmPasswordError = nil
         }
@@ -69,4 +81,33 @@ class RegistrationViewModel: ObservableObject {
         validatePassword()
         validateConfirmPassword()
     }
+    
+    func register(name: String, email: String, password: String, confirmPassword: String) {
+        onLoadingStateChanged?(true)
+        
+        Task {
+            do {
+                _ = try await authService.register(name: name, email: email, password: password)
+                
+                await MainActor.run {
+                    self.onLoadingStateChanged?(false)
+                    self.onSuccess?()
+                }
+            } catch {
+                await MainActor.run {
+                    self.onLoadingStateChanged?(false)
+                    self.handleAuthError(error)
+                }
+            }
+        }
+    }
+    
+    private func handleAuthError(_ error: Error) {
+        if let authError = error as? AuthError {
+            errorMessage = authError.localizedDescription
+        } else {
+            errorMessage = "Failure"
+        }
+    }
+    
 }

@@ -3,6 +3,7 @@ import SwiftUI
 struct LoginView: View {
     //MARK: - Properties
     @StateObject var viewModel: LoginViewModel
+    @State private var showErrorAlert = false
     
     let onLoginSuccess: () -> Void
     let onRegister: () -> Void
@@ -50,7 +51,7 @@ struct LoginView: View {
                             ReusableMainButton(title: "ავტორიზაცია", action: {
                                 viewModel.validateAll()
                                 if viewModel.emailError == nil && viewModel.passwordError == nil {
-                                    onLoginSuccess()
+                                    viewModel.login(email: viewModel.email, password: viewModel.password)
                                 }
                             })
                             
@@ -78,6 +79,27 @@ struct LoginView: View {
                 .padding(.top, 50)
             }
             .scrollDismissesKeyboard(.interactively)
+        }
+        .onAppear {
+            setupCallbacks()
+        }
+        .alert("შეცდომა", isPresented: $showErrorAlert) {
+            Button("კარგი", role: .cancel) {
+                viewModel.errorMessage = nil
+            }
+        } message: {
+            if let errorMessage = viewModel.errorMessage {
+                Text(errorMessage)
+            }
+        }
+        .onChange(of: viewModel.errorMessage) { _, newValue in
+            showErrorAlert = newValue != nil
+        }
+    }
+    
+    private func setupCallbacks() {
+        viewModel.onLoginSuccess = {
+            onLoginSuccess()
         }
     }
 }

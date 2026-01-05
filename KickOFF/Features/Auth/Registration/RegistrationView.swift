@@ -3,6 +3,7 @@ import SwiftUI
 struct RegistrationView: View {
     //MARK: - Properties
     @StateObject var viewModel: RegistrationViewModel
+    @State private var showErrorAlert = false
     
     let onLogin: () -> Void
     
@@ -51,7 +52,7 @@ struct RegistrationView: View {
                                     isSecure: true,
                                     text: $viewModel.password,
                                     errorMessage: viewModel.passwordError,
-                                    showError: viewModel.emailError != nil
+                                    showError: viewModel.passwordError != nil
                                 )
                                 .onChange(of: viewModel.password) {
                                     viewModel.validatePassword()
@@ -62,7 +63,7 @@ struct RegistrationView: View {
                                                   isSecure: true,
                                     text: $viewModel.confirmPassword,
                                     errorMessage: viewModel.confirmPasswordError,
-                                    showError: viewModel.emailError != nil
+                                    showError: viewModel.confirmPasswordError != nil
                                 )
                                 .onChange(of: viewModel.confirmPassword) {
                                     viewModel.validateConfirmPassword()
@@ -71,6 +72,7 @@ struct RegistrationView: View {
                             
                             ReusableMainButton(title: "რეგისტრაცია", action: {
                                 viewModel.validateAll()
+                                viewModel.register(name: viewModel.name, email: viewModel.email, password: viewModel.password, confirmPassword: viewModel.confirmPassword)
                                 if viewModel.nameError == nil && viewModel.emailError == nil && viewModel.passwordError == nil && viewModel.confirmPasswordError == nil {
                                     onLogin()
                                 } else {
@@ -102,6 +104,18 @@ struct RegistrationView: View {
                 .padding(.top, 30)
             }
             .scrollDismissesKeyboard(.interactively)
+        }
+        .alert("შეცდომა", isPresented: $showErrorAlert) {
+            Button("კარგი", role: .cancel) {
+                viewModel.errorMessage = nil
+            }
+        } message: {
+            if let errorMessage = viewModel.errorMessage {
+                Text(errorMessage)
+            }
+        }
+        .onChange(of: viewModel.errorMessage) { _, newValue in
+            showErrorAlert = newValue != nil
         }
     }
 }

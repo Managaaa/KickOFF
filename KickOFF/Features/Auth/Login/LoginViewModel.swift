@@ -8,6 +8,17 @@ class LoginViewModel: ObservableObject {
     
     @Published var emailError: String? = nil
     @Published var passwordError: String? = nil
+    @Published var errorMessage: String? = nil
+    
+    var onLoginSuccess: (() -> Void)?
+    var onLoadingStateChanged: ((Bool) -> Void)?
+    
+    private let authService: FirebaseAuthService
+    
+    //MARK: - Init
+    init(authService: FirebaseAuthService = .shared) {
+        self.authService = authService
+    }
     
     //MARK: - Computed Properties
     var isEmailValid: Bool {
@@ -21,7 +32,7 @@ class LoginViewModel: ObservableObject {
     //MARK: - Validations
     func validateEmail() {
         if !isEmailValid {
-            emailError = AuthError.invalidEmail.message
+            emailError = ValidationError.invalidEmail.message
         } else {
             emailError = nil
         }
@@ -29,7 +40,7 @@ class LoginViewModel: ObservableObject {
     
     func validatePassword() {
         if !isPasswordValid {
-            passwordError = AuthError.invalidPassword.message
+            passwordError = ValidationError.invalidPassword.message
         } else {
             passwordError = nil
         }
@@ -38,5 +49,32 @@ class LoginViewModel: ObservableObject {
     func validateAll() {
         validateEmail()
         validatePassword()
+    }
+    
+    func login(email: String, password: String) {
+        onLoadingStateChanged?(true)
+        
+        Task {
+            do {
+                _ = try await authService.login(email: email, password: password)
+                await MainActor.run {
+                    self.onLoadingStateChanged?(false)
+                    self.onLoginSuccess?()
+                }
+            } catch {
+                await MainActor.run {
+                    self.onLoadingStateChanged?(false)
+                    self.handleAuthError(error)
+                }
+            }
+        }
+    }
+    
+    private func handleAuthError(_ error: Error) {
+        if let authError = error as? AuthError {
+            errorMessage = authError.localizedDescription
+        } else {
+            errorMessage = "Failure"
+        }
     }
 }
