@@ -6,6 +6,7 @@ struct RegistrationView: View {
     @State private var showErrorAlert = false
     
     let onLogin: () -> Void
+    let onSuccess: (() -> Void)?
     
     //MARK: - Body
     var body: some View {
@@ -75,14 +76,14 @@ struct RegistrationView: View {
                                 viewModel.register(name: viewModel.name, email: viewModel.email, password: viewModel.password, confirmPassword: viewModel.confirmPassword)
                                 if viewModel.nameError == nil && viewModel.emailError == nil && viewModel.passwordError == nil && viewModel.confirmPasswordError == nil {
                                     onLogin()
-                                } else {
-                                    print("errori gak dzma")
                                 }
                             })
                             
                             VStack(spacing: 30) {
                                 orBorderView()
-                                GoogleAndAppleSignUp(onGoogleTapped: {}, onAppleTapped: {})
+                                GoogleAndAppleSignUp(onGoogleTapped: {
+                                    viewModel.signInWithGoogle()
+                                }, onAppleTapped: {})
                                 
                                 HStack(spacing: 3) {
                                     Text("უკვე გაქვს ანგარიში?")
@@ -105,6 +106,9 @@ struct RegistrationView: View {
             }
             .scrollDismissesKeyboard(.interactively)
         }
+        .onAppear {
+            setupCallbacks()
+        }
         .alert("შეცდომა", isPresented: $showErrorAlert) {
             Button("კარგი", role: .cancel) {
                 viewModel.errorMessage = nil
@@ -118,8 +122,14 @@ struct RegistrationView: View {
             showErrorAlert = newValue != nil
         }
     }
+    
+    private func setupCallbacks() {
+        viewModel.onSuccess = {
+            onSuccess?()
+        }
+    }
 }
 
 #Preview {
-    RegistrationView(viewModel: RegistrationViewModel(), onLogin: {})
+    RegistrationView(viewModel: RegistrationViewModel(), onLogin: {}, onSuccess: nil)
 }

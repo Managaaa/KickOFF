@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import Firebase
+import UIKit
 
 class RegistrationViewModel: ObservableObject {
     //MARK: - Properties
@@ -96,17 +97,48 @@ class RegistrationViewModel: ObservableObject {
             } catch {
                 await MainActor.run {
                     self.onLoadingStateChanged?(false)
+                    //self.handleAuthError(error) არასაჭირო ალერტებს იწვევს იყოს დროებით
+                }
+            }
+        }
+    }
+    
+    func signInWithGoogle() {
+        guard let rootViewController = getRootViewController() else { return }
+        
+        onLoadingStateChanged?(true)
+        
+        Task {
+            do {
+                _ = try await authService.signInWithGoogle(presentingViewController: rootViewController)
+                
+                await MainActor.run {
+                    self.onLoadingStateChanged?(false)
+                    self.onSuccess?()
+                }
+            } catch {
+                await MainActor.run {
+                    self.onLoadingStateChanged?(false)
                     self.handleAuthError(error)
                 }
             }
         }
     }
     
+    private func getRootViewController() -> UIViewController? {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first(where: { $0.isKeyWindow }),
+              let rootViewController = window.rootViewController else {
+            return nil
+        }
+        return rootViewController
+    }
+    
     private func handleAuthError(_ error: Error) {
         if let authError = error as? AuthError {
             errorMessage = authError.localizedDescription
         } else {
-            errorMessage = "Failure"
+            errorMessage = "ცადეთ თავიდან"
         }
     }
     

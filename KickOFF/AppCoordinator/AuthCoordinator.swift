@@ -31,6 +31,8 @@ final class AuthCoordinator: Coordinator {
         let viewModel = RegistrationViewModel()
         let view = RegistrationView(viewModel: viewModel, onLogin: { [weak self] in
             self?.navigationController.popViewController(animated: true)
+        }, onSuccess: { [weak self] in
+            self?.onAuthFinished?()
         })
         let vc = UIHostingController(rootView: view)
         navigationController.pushViewController(vc, animated: true)
