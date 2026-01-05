@@ -1,8 +1,8 @@
 import SwiftUI
 
-struct GoogleAndAppleSignUp: View {
+struct GoogleAndFacebookSignUp: View {
     var onGoogleTapped: () -> Void
-    var onAppleTapped: () -> Void
+    var onFacebookTapped: () -> Void
     var body: some View {
         HStack(spacing: 20) {
             Button {
@@ -14,9 +14,9 @@ struct GoogleAndAppleSignUp: View {
             }
             
             Button {
-                onAppleTapped()
+                onFacebookTapped()
             } label: {
-                Image(.apple)
+                Image(.fb)
                     .resizable()
                     .frame(width: 40, height: 40)
             }

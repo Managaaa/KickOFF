@@ -57,9 +57,9 @@ struct LoginView: View {
                             
                             VStack(spacing: 30) {
                                 orBorderView()
-                                GoogleAndAppleSignUp(onGoogleTapped: {
+                                GoogleAndFacebookSignUp(onGoogleTapped: {
                                     viewModel.signInWithGoogle()
-                                }, onAppleTapped: {})
+                                }, onFacebookTapped: {})
                                 
                                 HStack(spacing: 3) {
                                     Text("არ გაქვს ანგარიში?")
