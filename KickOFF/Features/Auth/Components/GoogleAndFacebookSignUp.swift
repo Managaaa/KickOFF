@@ -16,9 +16,9 @@ struct GoogleAndFacebookSignUp: View {
             Button {
                 onFacebookTapped()
             } label: {
-                Image(.fb)
-                    .resizable()
-                    .frame(width: 40, height: 40)
+//                Image(.fb)
+//                    .resizable()
+//                    .frame(width: 40, height: 40) //TODO: remove or implement any auth here
             }
         }
     }
