@@ -21,7 +21,7 @@ struct RegistrationView: View {
                     
                     VStack(alignment: .leading, spacing: 50) {
                         Text("რეგისტრაცია")
-                            .font(.custom("TBCContracticaCAPS-Black", size: 20))
+                            .font(FontType.black.swiftUIFont(size: 20))
                             .foregroundStyle(.white)
                         
                         VStack(spacing: 75) {
@@ -87,13 +87,13 @@ struct RegistrationView: View {
                                 
                                 HStack(spacing: 3) {
                                     Text("უკვე გაქვს ანგარიში?")
-                                        .font(.custom("TBCContracticaCAPS-Medium", size: 12))
+                                        .font(FontType.medium.swiftUIFont(size: 12))
                                         .foregroundStyle(.white)
                                     Button {
                                         onLogin()
                                     } label: {
                                         Text("ავტორიზაცია")
-                                            .font(.custom("TBCContracticaCAPS-Bold", size: 12))
+                                            .font(FontType.bold.swiftUIFont(size: 12))
                                             .foregroundStyle(.customGreen)
                                     }
                                 }

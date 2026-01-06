@@ -23,12 +23,12 @@ struct ReusableTextField: View {
                 Group {
                     if isSecure && !isPasswordVisible {
                         SecureField("", text: $text, prompt: Text(placeholder)
-                            .font(.custom("TBCContracticaCAPS-Medium", size: 14))
+                            .font(FontType.medium.swiftUIFont(size: 14))
                             .foregroundStyle(placeholderColor)
                         )
                     } else {
                         TextField("", text: $text, prompt: Text(placeholder)
-                            .font(.custom("TBCContracticaCAPS-Medium", size: 14))
+                            .font(FontType.medium.swiftUIFont(size: 14))
                             .foregroundStyle(placeholderColor)
                         )
                     }
@@ -54,7 +54,7 @@ struct ReusableTextField: View {
             
             if showError, let errorMessage = errorMessage {
                 Text(errorMessage)
-                    .font(.custom("TBCContracticaCAPS-Medium", size: 10))
+                    .font(FontType.medium.swiftUIFont(size: 10))
                     .foregroundStyle(.red)
                     .padding(.top, 2)
             }

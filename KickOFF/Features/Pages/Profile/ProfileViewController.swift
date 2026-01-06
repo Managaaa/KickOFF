@@ -5,10 +5,17 @@ class ProfileViewController: UIViewController {
     private let viewModel = ProfileViewModel()
     var onLogout: (() -> Void)?
     
+    private let pageTitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "პროფილი"
+        label.font = FontType.regular.uiFont(size: 16)
+        return label
+    }()
+    
     private let button: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Logout", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        button.titleLabel?.font = FontType.bold.uiFont(size: 16)
         button.backgroundColor = .systemRed
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 8

@@ -7,7 +7,7 @@ func orBorderView() -> some View {
             .foregroundColor(.white.opacity(0.6))
         
         Text("ან")
-            .font(.custom("TBCContracticaCAPS-Regular", size: 12))
+            .font(FontType.regular.swiftUIFont(size: 12))
             .foregroundColor(.white.opacity(0.6))
         
         Rectangle()

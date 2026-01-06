@@ -9,7 +9,7 @@ struct ReusableMainButton: View {
         } label: {
             Text(title)
                 .foregroundStyle(.white)
-                .font(.custom("TBCContracticaCAPS-Bold", size: 14))
+                .font(FontType.bold.swiftUIFont(size: 14))
                 .background(
                     Color.customGreen
                         .frame(width: 265, height: 50)
