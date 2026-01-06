@@ -101,6 +101,7 @@ final class FirebaseAuthService {
     }
     
     func logOut() throws {
+        GIDSignIn.sharedInstance.signOut()
         try auth.signOut()
     }
 }

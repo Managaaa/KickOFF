@@ -38,11 +38,9 @@ final class MainTabCoordinator: Coordinator {
         let articleViewController = UIViewController()
         articleViewController.tabBarItem = UITabBarItem(title: "Article", image: UIImage(systemName: "pencil.line"), tag: AppTab.article.rawValue)
         
-        let profileView = ProfileView(onLogin: { [weak self] in
-            self?.onLogout?()
-        })
-        let profileViewController = UIHostingController(rootView: profileView)
+        let profileViewController = ProfileViewController()
         profileViewController.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person"), tag: AppTab.profile.rawValue)
+        profileViewController.onLogout = onLogout
         
         tabBarController.viewControllers = [homeViewController, newsViewController, searchViewController, articleViewController, profileViewController,]
         navigationController.setViewControllers([tabBarController], animated: true)
