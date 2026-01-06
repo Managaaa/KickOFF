@@ -1,10 +1,12 @@
 import UIKit
+import FirebaseAuth
 
 final class AppCoordinator: Coordinator {
     //MARK: - Properties
     var navigationController: UINavigationController
     private var authCoordinator: AuthCoordinator?
     private var mainCoordinator: MainTabCoordinator?
+    private var authStateHandle: AuthStateDidChangeListenerHandle?
     
     //MARK: - Init
     init(navigationController: UINavigationController) {
@@ -13,7 +15,20 @@ final class AppCoordinator: Coordinator {
     
     //MARK: - Auth and TabBar views coordinator handle
     func start() {
-        showAuth()
+        authStateHandle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            guard let self = self else { return }
+            
+            if let handle = self.authStateHandle {
+                Auth.auth().removeStateDidChangeListener(handle)
+                self.authStateHandle = nil
+            }
+            
+            if user != nil {
+                self.showMain()
+            } else {
+                self.showAuth()
+            }
+        }
     }
     
     private func showAuth() {
