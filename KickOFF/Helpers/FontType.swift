@@ -1,7 +1,7 @@
 import SwiftUI
 import UIKit
 
-enum FontType {
+public enum FontType {
     case black
     case bold
     case book
