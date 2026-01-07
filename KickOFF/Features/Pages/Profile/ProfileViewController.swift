@@ -6,6 +6,12 @@ class ProfileViewController: UIViewController {
     private let viewModel = ProfileViewModel()
     var onLogout: (() -> Void)?
     
+    private let scrollView: UIScrollView = {
+        let view = UIScrollView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     private let pageTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "პროფილი"
@@ -33,7 +39,7 @@ class ProfileViewController: UIViewController {
     
     private let usernameLabel: UILabel = {
         let label = UILabel()
-        label.text = "lukamanaga"
+        label.text = ""
         label.font = FontType.medium.uiFont(size: 16)
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -42,7 +48,7 @@ class ProfileViewController: UIViewController {
     
     private let usermailLabel: UILabel = {
         let label = UILabel()
-        label.text = "managaluka0@gmail.com"
+        label.text = ""
         label.font = FontType.regular.uiFont(size: 14)
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -84,6 +90,7 @@ class ProfileViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupViewModel()
+        viewModel.loadCurrentUser()
     }
     
     //MARK: - Setup
@@ -194,6 +201,19 @@ class ProfileViewController: UIViewController {
         viewModel.onLogoutError = { [weak self] errorMessage in
             self?.showErrorAlert(message: errorMessage)
         }
+        
+        viewModel.onUserLoaded = { [weak self] user in
+            self?.updateUI(with: user)
+        }
+        
+        viewModel.onError = { [weak self] errorMessage in
+            self?.showErrorAlert(message: errorMessage)
+        }
+    }
+    
+    private func updateUI(with user: User) {
+        usernameLabel.text = user.name
+        usermailLabel.text = user.email
     }
     
     private func showErrorAlert(message: String) {

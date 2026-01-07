@@ -2,6 +2,10 @@ import Foundation
 
 class ProfileViewModel {
     private let authService: FirebaseAuthService
+    private var currentUser: User?
+    
+    var onError: ((String) -> Void)?
+    var onUserLoaded: ((User) -> Void)?
     
     var onLogoutSuccess: (() -> Void)?
     var onLogoutError: ((String) -> Void)?
@@ -17,6 +21,28 @@ class ProfileViewModel {
         } catch {
             let errorMessage = error.localizedDescription
             onLogoutError?(errorMessage)
+        }
+    }
+    
+    func loadCurrentUser() {
+        Task {
+            do {
+                guard let user = try await authService.getCurrentUser() else {
+                    await MainActor.run {
+                        onError?("User not found")
+                    }
+                    return
+                }
+                
+                await MainActor.run {
+                    currentUser = user
+                    onUserLoaded?(user)
+                }
+            } catch {
+                await MainActor.run {
+                    onError?(error.localizedDescription)
+                }
+            }
         }
     }
 }

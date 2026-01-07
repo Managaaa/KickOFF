@@ -104,4 +104,10 @@ final class FirebaseAuthService {
         GIDSignIn.sharedInstance.signOut()
         try auth.signOut()
     }
+    
+    func getCurrentUser() async throws -> User? {
+        guard let uid = auth.currentUser?.uid else { return nil }
+        let doc = try await db.collection("users").document(uid).getDocument()
+        return try doc.data(as: User.self)
+    }
 }
