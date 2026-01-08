@@ -5,6 +5,7 @@ class ProfileViewController: UIViewController {
     //MARK: - Properties
     private let viewModel = ProfileViewModel()
     var onLogout: (() -> Void)?
+    var onShowInterests: (() -> Void)?
     
     private let scrollView: UIScrollView = {
         let view = UIScrollView()
@@ -157,6 +158,8 @@ class ProfileViewController: UIViewController {
         
         interestCollectionView.register(InterestCell.self, forCellWithReuseIdentifier: "InterestCell")
         
+        addInterestButton.addTarget(self, action: #selector(addInterestButtonTapped), for: .touchUpInside)
+        
         NSLayoutConstraint.activate([
             addInterestButton.leadingAnchor.constraint(equalTo: interestTitleLabel.leadingAnchor),
             addInterestButton.topAnchor.constraint(equalTo: interestTitleLabel.bottomAnchor, constant: 30),
@@ -229,6 +232,10 @@ class ProfileViewController: UIViewController {
     //MARK: - Actions
     private func logoutButtonTapped() {
         viewModel.logout()
+    }
+    
+    @objc private func addInterestButtonTapped() {
+        onShowInterests?()
     }
 }
 

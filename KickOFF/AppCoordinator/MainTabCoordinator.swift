@@ -15,6 +15,7 @@ final class MainTabCoordinator: Coordinator {
     var selectedTab: AppTab?
     var navigationController: UINavigationController
     var onLogout: (() -> Void)?
+    private weak var tabBarController: UITabBarController?
     
     //MARK: - Init
     init(navigationController: UINavigationController, selectedTab: AppTab? = nil) {
@@ -25,6 +26,7 @@ final class MainTabCoordinator: Coordinator {
     //MARK: - TabBarPages
     func start() {
         let tabBarController = UITabBarController()
+        self.tabBarController = tabBarController
         
         let homeViewController = UIViewController()
         homeViewController.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), tag: AppTab.home.rawValue)
@@ -41,9 +43,26 @@ final class MainTabCoordinator: Coordinator {
         let profileViewController = ProfileViewController()
         profileViewController.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person"), tag: AppTab.profile.rawValue)
         profileViewController.onLogout = onLogout
+        profileViewController.onShowInterests = { [weak self] in
+            self?.showInterests()
+        }
         
         tabBarController.viewControllers = [homeViewController, newsViewController, searchViewController, articleViewController, profileViewController,]
         navigationController.setViewControllers([tabBarController], animated: true)
         
+    }
+    
+    //MARK: - Navigation Functions
+    private func showInterests() {
+        let interestsViewController = InterestsPageViewController()
+        let interestsNavigationController = UINavigationController(rootViewController: interestsViewController)
+        interestsNavigationController.modalPresentationStyle = .pageSheet
+        
+        if let sheet = interestsNavigationController.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+        }
+        
+        tabBarController?.present(interestsNavigationController, animated: true)
     }
 }

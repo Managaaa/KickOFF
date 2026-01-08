@@ -29,7 +29,7 @@ class ProfileViewModel {
             do {
                 guard let user = try await authService.getCurrentUser() else {
                     await MainActor.run {
-                        onError?("User not found")
+                        onError?("მომხმარებელი ვერ მოიძებნა")
                     }
                     return
                 }
