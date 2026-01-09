@@ -47,7 +47,7 @@ struct NewsCardView: View {
                     } label: {
                         Image("heart")
                             .resizable()
-                            .frame(width: 16, height: 16)
+                            .frame(width: 20, height: 20)
                     }
                     
                     HStack(spacing: 22) {
@@ -56,7 +56,7 @@ struct NewsCardView: View {
                         } label: {
                             Image("comment")
                                 .resizable()
-                                .frame(width: 16, height: 16)
+                                .frame(width: 20, height: 20)
                         }
                         
                         Button {
@@ -64,7 +64,7 @@ struct NewsCardView: View {
                         } label: {
                             Image("favorite")
                                 .resizable()
-                                .frame(width: 16, height: 16)
+                                .frame(width: 20, height: 20)
                         }
                     }
                 }
