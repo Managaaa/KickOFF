@@ -23,7 +23,7 @@ class InterestsPageViewController: UIViewController {
     private let interestsCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.minimumLineSpacing = 16
+        layout.minimumLineSpacing = 24
         layout.itemSize = CGSize(width: 70, height: 70)
         let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
         view.backgroundColor = .clear
@@ -80,7 +80,7 @@ class InterestsPageViewController: UIViewController {
     
 }
 
-extension InterestsPageViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+extension InterestsPageViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         10
     }
@@ -91,6 +91,11 @@ extension InterestsPageViewController: UICollectionViewDelegate, UICollectionVie
         }
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+            let width = collectionView.frame.width
+            return CGSize(width: width, height: 70)
+        }
     
     
 }
