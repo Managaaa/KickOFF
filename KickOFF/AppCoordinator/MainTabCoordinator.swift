@@ -28,7 +28,8 @@ final class MainTabCoordinator: Coordinator {
         let tabBarController = UITabBarController()
         self.tabBarController = tabBarController
         
-        let homeViewController = UIViewController()
+        let homeView = HomeView()
+        let homeViewController = UIHostingController(rootView: homeView)
         homeViewController.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), tag: AppTab.home.rawValue)
         
         let newsViewController = UIViewController()
