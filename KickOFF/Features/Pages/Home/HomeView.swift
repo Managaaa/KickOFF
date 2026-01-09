@@ -40,10 +40,12 @@ struct HomeView: View {
                         Text("შეამოწმე შენი სპორტული ცოდნა")
                             .foregroundStyle(.white.opacity(0.8))
                             .font(FontType.medium.swiftUIFont(size: 12))
+                        
+                        QuizCardView()
                     }
                 }
                 .padding(.horizontal, 16)
-                .padding(.top, 30)
+                .padding(.top, 10)
             }
         }
     }
