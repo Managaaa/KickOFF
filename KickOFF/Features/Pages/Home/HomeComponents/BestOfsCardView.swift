@@ -30,11 +30,11 @@ struct BestOfsCardView: View {
                 .clipped()
                 
                 Text(title)
-                    .font(FontType.medium.swiftUIFont(size: 14))
+                    .font(FontType.medium.swiftUIFont(size: 12))
                     .foregroundColor(.customGreen)
                 
                 Text(subtitle)
-                    .font(FontType.medium.swiftUIFont(size: 16))
+                    .font(FontType.medium.swiftUIFont(size: 14))
                     .foregroundColor(.white)
             }
             .padding(12)

@@ -27,9 +27,20 @@ struct HomeView: View {
                             ProgressView()
                                 .padding()
                         } else {
-                            ForEach(viewModel.bestOfNews) { news in
-                                BestOfsCardView(title: news.title, subtitle: news.subtitle, image: news.imageUrl)
+                            GeometryReader { geometry in
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 12) {
+                                        ForEach(viewModel.bestOfNews) { news in
+                                            BestOfsCardView(title: news.title, subtitle: news.subtitle, image: news.imageUrl)
+                                                .frame(width: geometry.size.width)
+                                        }
+                                    }
+                                    .scrollTargetLayout()
+                                }
+                                .scrollTargetBehavior(.viewAligned)
+                                .scrollClipDisabled()
                             }
+                            .frame(height: 300)
                         }
                     }
                     VStack(alignment: .leading, spacing: 12) {
