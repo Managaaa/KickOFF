@@ -24,7 +24,7 @@ struct HomeView: View {
                             .font(FontType.medium.swiftUIFont(size: 12))
                         
                         if viewModel.isLoading {
-                           Rectangle()
+                            Rectangle()
                                 .foregroundStyle(.clear)
                                 .frame(height: 300)
                         } else {
@@ -54,7 +54,15 @@ struct HomeView: View {
                             .foregroundStyle(.white.opacity(0.8))
                             .font(FontType.medium.swiftUIFont(size: 12))
                         
-                        NewsCardView()
+                        if viewModel.isLoading {
+                            Rectangle()
+                                .foregroundStyle(.clear)
+                                .frame(height: 300)
+                        } else {
+                            ForEach(viewModel.news) { news in
+                                NewsCardView(title: news.title, subtitle: news.subtitle, image: news.imageUrl, date: viewModel.timeAgo(from: news.date))
+                            }
+                        }
                     }
                     VStack(alignment: .leading, spacing: 12) {
                         
