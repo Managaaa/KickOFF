@@ -18,4 +18,19 @@ final class NewsService {
                 completion(bestOfNews)
             }
     }
+    
+    func fetchNews(completion: @escaping ([News]) -> Void) {
+        db.collection("news")
+            .order(by: "date", descending: true)
+            .getDocuments { snapshot, error in
+                
+                guard let documents = snapshot?.documents else {
+                    completion([])
+                    return
+                }
+                
+                let news = documents.compactMap { News(document: $0)}
+                completion(news)
+            }
+    }
 }

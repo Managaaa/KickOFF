@@ -1,6 +1,10 @@
 import SwiftUI
 
 struct NewsCardView: View {
+    let title: String
+    let subtitle: String
+    let image: String
+    let date: String
     var body: some View {
         ZStack {
             Color.customGray
@@ -9,21 +13,33 @@ struct NewsCardView: View {
             
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("ქუთაისის თასი 2025")
+                    Text(title)
                         .font(FontType.medium.swiftUIFont(size: 12))
                         .foregroundStyle(.customGreen)
                     
-                    Text("მანაგაძემ გაიტანა 2 გოლი 3 ასისტი - ტორპედო ნახევარ ფინალშია")
+                    Text(subtitle)
                         .font(FontType.medium.swiftUIFont(size: 13))
                         .foregroundStyle(.white)
                 }
                 
                 Spacer()
                 
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.white)
-                    .frame(width: 125, height: 100)
-                    .padding(.bottom, 50)
+                AsyncImage(url: URL(string: image)) { phase in
+                    if let loadedImage = phase.image {
+                        loadedImage
+                            .resizable()
+                            .frame(width: 125, height: 100)
+                            .scaledToFill()
+                            .cornerRadius(10)
+                            .clipped()
+                            .padding(.bottom, 50)
+                    } else {
+                        Rectangle()
+                            .frame(width: 130, height: 100)
+                            .padding(.bottom, 50)
+                            .foregroundStyle(.clear)
+                    }
+                }
             }
             .padding(.top, 2)
             .padding(.horizontal, 20)
@@ -36,37 +52,18 @@ struct NewsCardView: View {
                 .padding(.bottom, 50)
             
             HStack {
-                Text("2 საათის წინ")
+                Text(date)
                     .font(FontType.light.swiftUIFont(size: 10))
                     .foregroundStyle(.white)
                 
                 Spacer()
-                HStack(spacing: 12) {
-                    Button {
-                        
-                    } label: {
-                        Image("heart")
-                            .resizable()
-                            .frame(width: 20, height: 20)
-                    }
+                
+                Button {
                     
-                    HStack(spacing: 22) {
-                        Button {
-                            
-                        } label: {
-                            Image("comment")
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                        }
-                        
-                        Button {
-                            
-                        } label: {
-                            Image("favorite")
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                        }
-                    }
+                } label: {
+                    Image("favorite")
+                        .resizable()
+                        .frame(width: 20, height: 20)
                 }
             }
             .padding(.horizontal, 20)
@@ -74,7 +71,6 @@ struct NewsCardView: View {
     }
 }
 
-
 #Preview {
-    NewsCardView()
+    HomeView()
 }
