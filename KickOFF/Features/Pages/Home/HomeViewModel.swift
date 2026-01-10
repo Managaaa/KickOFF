@@ -5,17 +5,17 @@ class HomeViewModel: ObservableObject {
     @Published var bestOfNews: [BestOfNews] = []
     @Published var isLoading: Bool = false
     
-    private let bestOfNewsService: BestOfNewsService
+    private let newsService: NewsService
     
-    init(bestOfNewsService: BestOfNewsService = BestOfNewsService()) {
-        self.bestOfNewsService = bestOfNewsService
+    init(newsService: NewsService = NewsService()) {
+        self.newsService = newsService
         fetchBestOfNews()
     }
     
     func fetchBestOfNews() {
         isLoading = true
         
-        bestOfNewsService.fetchNews { [weak self] news in
+        newsService.fetchBestOfNews { [weak self] news in
             DispatchQueue.main.async {
                 self?.isLoading = false
                 self?.bestOfNews = news

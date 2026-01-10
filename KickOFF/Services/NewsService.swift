@@ -1,10 +1,10 @@
 import FirebaseFirestore
 
-final class BestOfNewsService {
+final class NewsService {
 
     private let db = Firestore.firestore()
 
-    func fetchNews(completion: @escaping ([BestOfNews]) -> Void) {
+    func fetchBestOfNews(completion: @escaping ([BestOfNews]) -> Void) {
         db.collection("bestofnews")
             .order(by: "date", descending: true)
             .getDocuments { snapshot, error in

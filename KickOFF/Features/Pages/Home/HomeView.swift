@@ -24,8 +24,9 @@ struct HomeView: View {
                             .font(FontType.medium.swiftUIFont(size: 12))
                         
                         if viewModel.isLoading {
-                            ProgressView()
-                                .padding()
+                           Rectangle()
+                                .foregroundStyle(.clear)
+                                .frame(height: 300)
                         } else {
                             GeometryReader { geometry in
                                 ScrollView(.horizontal, showsIndicators: false) {
