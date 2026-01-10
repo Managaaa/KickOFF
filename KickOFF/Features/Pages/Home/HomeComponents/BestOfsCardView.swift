@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct BestOfsCardView: View {
+    let title: String
+    let subtitle: String
+    let image: String
     var body: some View {
         ZStack(alignment: .topLeading) {
             Color.customGray
@@ -8,15 +11,29 @@ struct BestOfsCardView: View {
                 .cornerRadius(12)
             VStack(alignment: .leading, spacing: 12) {
                 
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(.white)
-                    .frame(height: 180)
+                AsyncImage(url: URL(string: image)) { phase in
+                    if let loadedImage = phase.image {
+                        loadedImage
+                            .resizable()
+                            .scaledToFill()
+                            .frame(height: 180)
+                            .clipped()
+                            .cornerRadius(12)
+                    } else {
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(height: 180)
+                            .cornerRadius(12)
+                    }
+                }
+                .frame(height: 180)
+                .clipped()
                 
-                Text("Best of 2025: წლის საუკეთესო ტრანსფერები")
+                Text(title)
                     .font(FontType.medium.swiftUIFont(size: 14))
                     .foregroundColor(.customGreen)
                 
-                Text("წლის საუკეთესო გადაგება ასაში და მისი გავლენა")
+                Text(subtitle)
                     .font(FontType.medium.swiftUIFont(size: 16))
                     .foregroundColor(.white)
             }

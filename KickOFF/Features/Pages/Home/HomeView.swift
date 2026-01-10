@@ -1,6 +1,12 @@
 import SwiftUI
 
 struct HomeView: View {
+    @StateObject var viewModel: HomeViewModel
+    
+    init(viewModel: HomeViewModel = HomeViewModel()) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
+    
     var body: some View {
         ZStack(alignment: .topLeading) {
             Color.customBackground
@@ -17,7 +23,14 @@ struct HomeView: View {
                             .foregroundStyle(.white.opacity(0.8))
                             .font(FontType.medium.swiftUIFont(size: 12))
                         
-                        BestOfsCardView()
+                        if viewModel.isLoading {
+                            ProgressView()
+                                .padding()
+                        } else {
+                            ForEach(viewModel.bestOfNews) { news in
+                                BestOfsCardView(title: news.title, subtitle: news.subtitle, image: news.imageUrl)
+                            }
+                        }
                     }
                     VStack(alignment: .leading, spacing: 12) {
                         
