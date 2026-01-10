@@ -31,19 +31,19 @@ final class MainTabCoordinator: Coordinator {
         let homeViewModel = HomeViewModel()
         let homeView = HomeView(viewModel: homeViewModel)
         let homeViewController = UIHostingController(rootView: homeView)
-        homeViewController.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), tag: AppTab.home.rawValue)
+        homeViewController.tabBarItem = UITabBarItem(title: "მთავარი", image: UIImage(systemName: "house"), tag: AppTab.home.rawValue)
         
         let newsViewController = UIViewController()
-        newsViewController.tabBarItem = UITabBarItem(title: "News", image: UIImage(systemName: "newspaper"), tag: AppTab.news.rawValue)
+        newsViewController.tabBarItem = UITabBarItem(title: "სიახლეები", image: UIImage(systemName: "newspaper"), tag: AppTab.news.rawValue)
         
         let searchViewController = UIViewController()
-        searchViewController.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: AppTab.search.rawValue)
+        searchViewController.tabBarItem = UITabBarItem(title: "ძებნა", image: UIImage(systemName: "magnifyingglass"), tag: AppTab.search.rawValue)
         
         let articleViewController = UIViewController()
-        articleViewController.tabBarItem = UITabBarItem(title: "Article", image: UIImage(systemName: "pencil.line"), tag: AppTab.article.rawValue)
+        articleViewController.tabBarItem = UITabBarItem(title: "არტიკლები", image: UIImage(systemName: "pencil.line"), tag: AppTab.article.rawValue)
         
         let profileViewController = ProfileViewController()
-        profileViewController.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person"), tag: AppTab.profile.rawValue)
+        profileViewController.tabBarItem = UITabBarItem(title: "პროფილი", image: UIImage(systemName: "person"), tag: AppTab.profile.rawValue)
         profileViewController.onLogout = onLogout
         profileViewController.onShowInterests = { [weak self] in
             self?.showInterests()
