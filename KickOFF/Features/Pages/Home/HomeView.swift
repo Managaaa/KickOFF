@@ -14,10 +14,16 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 30) {
                     VStack(alignment: .leading, spacing: 12) {
-                        
-                        Text("Best Of 2025")
-                            .foregroundStyle(.white)
-                            .font(FontType.black.swiftUIFont(size: 20))
+                        VStack(alignment: .leading, spacing: 30) {
+                            Image(.logo)
+                                .resizable()
+                                .frame(width: 150, height: 20)
+                            
+                            Text("Best Of 2025")
+                                .foregroundStyle(.white)
+                                .font(FontType.black.swiftUIFont(size: 20))
+                            
+                        }
                         
                         Text("2025 წლის გამორჩეული ამბები")
                             .foregroundStyle(.white.opacity(0.8))
@@ -78,7 +84,7 @@ struct HomeView: View {
                     }
                 }
                 .padding(.horizontal, 16)
-                .padding(.top, 10)
+                .padding(.top, 2)
             }
         }
     }

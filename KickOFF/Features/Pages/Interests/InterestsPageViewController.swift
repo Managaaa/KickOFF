@@ -2,6 +2,8 @@ import UIKit
 
 class InterestsPageViewController: UIViewController {
     //MARK: - Properties
+    private let viewModel = ProfileViewModel()
+    
     private let pageTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "ინტერესები"
@@ -36,6 +38,7 @@ class InterestsPageViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .customBackground
         setupUI()
+        setupViewModel()
     }
     
     private func setupUI() {
@@ -78,17 +81,26 @@ class InterestsPageViewController: UIViewController {
         ])
     }
     
+    private func setupViewModel() {
+        viewModel.onInterestsLoaded = { [weak self] in
+            self?.interestsCollectionView.reloadData()
+        }
+        viewModel.fetchInterests()
+    }
+    
 }
 
 extension InterestsPageViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        10
+        viewModel.interests.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GeneralInterestCell", for: indexPath) as? GeneralInterestCell else {
             return UICollectionViewCell()
         }
+        let interest = viewModel.interests[indexPath.item]
+        cell.configure(with: interest)
         return cell
     }
     

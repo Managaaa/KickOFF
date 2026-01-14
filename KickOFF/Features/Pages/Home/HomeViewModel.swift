@@ -17,22 +17,26 @@ class HomeViewModel: ObservableObject {
     func fetchBestOfNews() {
         isLoading = true
         
-        newsService.fetchBestOfNews { [weak self] news in
-            DispatchQueue.main.async {
-                self?.isLoading = false
+        Task { [weak self] in
+            let news = await self?.newsService.fetchBestOfNews() ?? []
+            
+            await MainActor.run {
                 self?.bestOfNews = news
-                
+                self?.isLoading = false
             }
         }
     }
+    
     func fetchNews() {
         isLoading = true
         
-        newsService.fetchNews { [weak self] news in
-            DispatchQueue.main.async {
-                self?.isLoading = false
+        Task { [weak self] in
+            let news = await self?.newsService.fetchNews() ?? []
+            
+            await MainActor.run(body:  {
                 self?.news = news
-            }
+                self?.isLoading = false
+            })
         }
     }
     

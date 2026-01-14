@@ -1,36 +1,41 @@
 import FirebaseFirestore
 
 final class NewsService {
-
+    
     private let db = Firestore.firestore()
-
-    func fetchBestOfNews(completion: @escaping ([BestOfNews]) -> Void) {
-        db.collection("bestofnews")
-            .order(by: "date", descending: true)
-            .getDocuments { snapshot, error in
-
-                guard let documents = snapshot?.documents else {
-                    completion([])
-                    return
+    
+    func fetchBestOfNews() async -> [BestOfNews] {
+        await withCheckedContinuation { continuation in
+            db.collection("bestofnews")
+                .order(by: "date", descending: true)
+                .getDocuments { snapshot, error in
+                    
+                    guard let documents = snapshot?.documents else {
+                        continuation.resume(returning: [])
+                        return
+                    }
+                    
+                    let bestOfNews = documents.compactMap { BestOfNews(document: $0) }
+                    continuation.resume(returning: bestOfNews)
                 }
-
-                let bestOfNews = documents.compactMap { BestOfNews(document: $0) }
-                completion(bestOfNews)
-            }
+        }
     }
     
-    func fetchNews(completion: @escaping ([News]) -> Void) {
-        db.collection("news")
-            .order(by: "date", descending: true)
-            .getDocuments { snapshot, error in
-                
-                guard let documents = snapshot?.documents else {
-                    completion([])
-                    return
+    
+    func fetchNews() async -> [News] {
+        await withCheckedContinuation { continuation in
+            db.collection("news")
+                .order(by: "date", descending: true)
+                .getDocuments { snapshot, error in
+                    
+                    guard let documents = snapshot?.documents else {
+                        continuation.resume(returning: [])
+                        return
+                    }
+                    
+                    let news = documents.compactMap { News(document: $0)}
+                    continuation.resume(returning: news)
                 }
-                
-                let news = documents.compactMap { News(document: $0)}
-                completion(news)
-            }
+        }
     }
 }
