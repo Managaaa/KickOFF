@@ -6,6 +6,7 @@ class ProfileViewController: UIViewController {
     private let viewModel = ProfileViewModel()
     var onLogout: (() -> Void)?
     var onShowInterests: (() -> Void)?
+    var onSettings: (() -> Void)?
     
     private let scrollView: UIScrollView = {
         let view = UIScrollView()
@@ -36,6 +37,13 @@ class ProfileViewController: UIViewController {
         image.isUserInteractionEnabled = true
         image.translatesAutoresizingMaskIntoConstraints = false
         return image
+    }()
+    
+    private let settingsButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "settingsbutton"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
     
     private let usernameLabel: UILabel = {
@@ -114,9 +122,11 @@ class ProfileViewController: UIViewController {
     }
     
     private func configureCover() {
-        [profileCover, profileCoverImage, usernameLabel, usermailLabel].forEach {
+        [profileCover, profileCoverImage, usernameLabel, usermailLabel, settingsButton].forEach {
             view.addSubview($0)
         }
+        
+        settingsButton.addTarget(self, action: #selector(settingsButtonTapped), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
             profileCover.topAnchor.constraint(equalTo: pageTitleLabel.bottomAnchor, constant: 20),
@@ -136,7 +146,12 @@ class ProfileViewController: UIViewController {
             
             usermailLabel.leadingAnchor.constraint(equalTo: usernameLabel.leadingAnchor),
             usermailLabel.trailingAnchor.constraint(equalTo: profileCover.trailingAnchor, constant: -10),
-            usermailLabel.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor, constant: 3)
+            usermailLabel.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor, constant: 3),
+            
+            settingsButton.trailingAnchor.constraint(equalTo: profileCover.trailingAnchor, constant: -16),
+            settingsButton.centerYAnchor.constraint(equalTo: profileCover.centerYAnchor),
+            settingsButton.heightAnchor.constraint(equalToConstant: 36),
+            settingsButton.widthAnchor.constraint(equalToConstant: 36)
         ])
     }
     
@@ -242,6 +257,10 @@ class ProfileViewController: UIViewController {
     
     @objc private func addInterestButtonTapped() {
         onShowInterests?()
+    }
+    
+    @objc private func settingsButtonTapped() {
+        onSettings?()
     }
 }
 
