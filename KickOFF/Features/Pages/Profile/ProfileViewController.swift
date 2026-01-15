@@ -102,6 +102,11 @@ class ProfileViewController: UIViewController {
         viewModel.loadCurrentUser()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.loadCurrentUser()
+    }
+    
     //MARK: - Setup
     private func setupUI() {
         view.backgroundColor = .customBackground
@@ -238,6 +243,29 @@ class ProfileViewController: UIViewController {
     private func updateUI(with user: User) {
         usernameLabel.text = user.name
         usermailLabel.text = user.email
+        
+        if let imageUrlString = user.profileImageUrl, let imageUrl = URL(string: imageUrlString) {
+            loadImage(from: imageUrl)
+        } else {
+            profileCoverImage.image = UIImage(named: "pfp")
+        }
+    }
+    
+    private func loadImage(from url: URL) {
+        Task {
+            do {
+                let (data, _) = try await URLSession.shared.data(from: url)
+                if let image = UIImage(data: data) {
+                    await MainActor.run {
+                        self.profileCoverImage.image = image
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    self.profileCoverImage.image = UIImage(named: "pfp")
+                }
+            }
+        }
     }
     
     private func showErrorAlert(message: String) {

@@ -105,6 +105,31 @@ final class FirebaseAuthService {
         try auth.signOut()
     }
     
+    func updateProfile(name: String, email: String) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not authenticated"])
+        }
+        let updates: [String: Any] = [
+            "name": name,
+            "email": email,
+            "updatedAd": Timestamp()
+        ]
+        
+        try await
+        db.collection("users").document(uid)
+            .updateData(updates)
+    }
+    
+    func updateProfileImage(imageUrl: String) async throws {
+        guard let uid = auth.currentUser?.uid else {
+            throw NSError(domain: "FirebaseAuthService", code: 401,
+                          userInfo: [NSLocalizedDescriptionKey: "User not authenticated"])
+        }
+        
+        try await
+        db.collection("users").document(uid).updateData(["profileImageUrl" : imageUrl])
+    }
+    
     func getCurrentUser() async throws -> User? {
         guard let uid = auth.currentUser?.uid else { return nil }
         let doc = try await db.collection("users").document(uid).getDocument()

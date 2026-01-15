@@ -5,11 +5,13 @@ struct User: Codable, Identifiable {
     let name: String
     let email: String
     let createdAt: Date
+    let profileImageUrl: String?
     
-    init(id: String? = nil, name: String, email: String, createdAt: Date = Date()) {
+    init(id: String? = nil, name: String, email: String, createdAt: Date = Date(), profileImageUrl: String? = nil) {
         self.id = id
         self.name = name
         self.email = email
         self.createdAt = createdAt
+        self.profileImageUrl = profileImageUrl
     }
 }

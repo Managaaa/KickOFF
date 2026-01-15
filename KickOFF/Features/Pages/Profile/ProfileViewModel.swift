@@ -1,9 +1,12 @@
 import Foundation
+import UIKit
 
 class ProfileViewModel {
     private let authService: FirebaseAuthService
     private let interestService: InterestService
-    private var currentUser: User?
+    private let storageService: StorageService
+    var currentUser: User?
+    private var pendiongOperations: Int = 0
     
     var onError: ((String) -> Void)?
     var onUserLoaded: ((User) -> Void)?
@@ -11,13 +14,17 @@ class ProfileViewModel {
     var onLogoutSuccess: (() -> Void)?
     var onLogoutError: ((String) -> Void)?
     var onInterestsLoaded: (() -> Void)?
+    var onSaveComplete: (() -> Void)?
+    var onImageUploadSuccess: ((String) -> Void)?
+    var onProfileUpdateSuccess: (() -> Void)?
     var isLoading: Bool = false
     
     private(set) var interests: [Interest] = []
     
-    init(authService: FirebaseAuthService = .shared, interestService: InterestService = InterestService()) {
+    init(authService: FirebaseAuthService = .shared, interestService: InterestService = InterestService(), storageService: StorageService = .shared) {
         self.authService = authService
         self.interestService = interestService
+        self.storageService = storageService
     }
     
     func logout() {
@@ -52,6 +59,120 @@ class ProfileViewModel {
         }
     }
     
+    func hasChanges(name: String, email: String, hasNewImage: Bool) -> Bool {
+        guard let user = currentUser else { return false }
+        
+        let textChanged = name != user.name || email != user.email
+        return textChanged || hasNewImage
+    }
+    
+    func saveChanges(name: String, email: String, image: UIImage?) {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !trimmedName.isEmpty, !trimmedEmail.isEmpty else {
+            onError?("შეავსეთ ყველა ველი")
+            return
+        }
+        
+        let needsImageUpload = image != nil
+        let needsProfileUpdate = trimmedName != currentUser?.name || trimmedEmail != currentUser?.email
+        
+        guard needsImageUpload || needsProfileUpdate else {
+            onError?("ცვლილებები არ არის")
+            return
+        }
+        
+        pendiongOperations = 0
+        if needsImageUpload { pendiongOperations += 1 }
+        if needsProfileUpdate { pendiongOperations += 1 }
+        
+        if needsImageUpload, let image = image {
+            uploadProfileImage(image, name: trimmedName, email: trimmedEmail)
+        } else if needsProfileUpdate {
+            updateProfile(name: trimmedName, email: trimmedEmail)
+        }
+    }
+    
+    
+    private func uploadProfileImage(_ image: UIImage, name: String? = nil, email: String? = nil) {
+        Task {
+            do {
+                guard let user = try await authService.getCurrentUser() else {
+                    await MainActor.run {
+                        onError?("მომხმარებელი ვერ მოიძებნა")
+                        decrementOperations()
+                    }
+                    return
+                }
+                
+                guard let uid = user.id else {
+                    await MainActor.run {
+                        onError?("User ID ვერ მოიძებნა")
+                        decrementOperations()
+                    }
+                    return
+                }
+                
+                let imageUrl = try await storageService.uploadProfileImage(image, uid: uid)
+                try await authService.updateProfileImage(imageUrl: imageUrl)
+                
+                let needsProfileUpdate = (name != nil && name != currentUser?.name) || (email != nil && email != currentUser?.email)
+                if needsProfileUpdate, let name = name, let email = email {
+                    try await authService.updateProfile(name: name, email: email)
+                }
+                
+                if let user = currentUser {
+                    currentUser = User(
+                        id: user.id,
+                        name: name ?? user.name,
+                        email: email ?? user.email,
+                        createdAt: user.createdAt,
+                        profileImageUrl: imageUrl
+                    )
+                }
+                
+                await MainActor.run {
+                    onImageUploadSuccess?(imageUrl)
+                    decrementOperations()
+                }
+            } catch {
+                await MainActor.run {
+                    onError?(error.localizedDescription)
+                    decrementOperations()
+                }
+            }
+        }
+    }
+    
+    private func updateProfile(name: String, email: String) {
+        Task {
+            do {
+                try await authService.updateProfile(name: name, email: email)
+                
+                if let user = currentUser {
+                    currentUser = User(
+                        id: user.id,
+                        name: name,
+                        email: email,
+                        createdAt: user.createdAt,
+                        profileImageUrl: user.profileImageUrl
+                    )
+                }
+                
+                await MainActor.run {
+                    onProfileUpdateSuccess?()
+                    decrementOperations()
+                }
+            } catch {
+                await MainActor.run {
+                    onError?(error.localizedDescription)
+                    decrementOperations()
+                }
+            }
+        }
+    }
+    
     func fetchInterests() {
         isLoading = true
         
@@ -63,6 +184,13 @@ class ProfileViewModel {
                 self?.isLoading = false
                 self?.onInterestsLoaded?()
             }
+        }
+    }
+    
+    private func decrementOperations() {
+        pendiongOperations -= 1
+        if pendiongOperations == 0 {
+            onSaveComplete?()
         }
     }
 }

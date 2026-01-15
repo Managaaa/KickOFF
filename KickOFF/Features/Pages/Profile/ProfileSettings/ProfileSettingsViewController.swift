@@ -1,6 +1,31 @@
 import UIKit
+import SwiftUI
+import PhotosUI
 
 class ProfileSettingsViewController: UIViewController {
+    //MARK: - Properties
+    private let viewModel = ProfileViewModel()
+    
+    private var name: String = "" {
+        didSet {
+            updateTextFields()
+        }
+    }
+    private var email: String = "" {
+        didSet {
+            updateTextFields()
+        }
+    }
+    private var selectedImage: UIImage? = nil {
+        didSet {
+            updateProfilePictureButton()
+        }
+    }
+    private var currentProfileImageUrl: String? = nil {
+        didSet {
+            updateProfilePictureButton()
+        }
+    }
     
     private let pageTitleLabel: UILabel = {
         let label = UILabel()
@@ -13,14 +38,49 @@ class ProfileSettingsViewController: UIViewController {
         return label
     }()
     
+    private var profilePictureButtonHostingController: UIHostingController<ReusableProfilePictureButton>?
+    private var textFieldsHostingController: UIHostingController<ProfileSettingsTextFieldsView>?
+    private var reusableButtonHostingController: UIHostingController<ReusableMainButton>?
+    
+    //MARK: - Init
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .customBackground
+        setupViewModel()
         setupUI()
+        loadUserData()
+    }
+    
+    //MARK: - Setup
+    private func setupViewModel() {
+        viewModel.onUserLoaded = { [weak self] user in
+            guard let self = self else { return }
+            self.name = user.name
+            self.email = user.email
+            self.currentProfileImageUrl = user.profileImageUrl
+        }
+        
+        viewModel.onError = { [weak self] errorMessage in
+            self?.showAlert(message: errorMessage)
+        }
+        
+        viewModel.onSaveComplete = { [weak self] in
+            self?.showAlert(message: "პროფილი წარმატებით განახლდა", completion: {
+                self?.navigationController?.popViewController(animated: true)
+            })
+        }
+        
+        viewModel.onImageUploadSuccess = { [weak self] imageUrl in
+            self?.currentProfileImageUrl = imageUrl
+            self?.selectedImage = nil
+        }
     }
     
     private func setupUI() {
         configurePageTitleLabel()
+        configureProfilePictureButton()
+        configureTextFields()
+        configureSaveButton()
     }
     
     private func configurePageTitleLabel() {
@@ -34,4 +94,167 @@ class ProfileSettingsViewController: UIViewController {
         ])
     }
     
+    private func configureProfilePictureButton() {
+        let button = ReusableProfilePictureButton(
+            action: { [weak self] in
+                self?.choosePictureTapped()
+            },
+            imageUrl: currentProfileImageUrl,
+            selectedImage: selectedImage
+        )
+        
+        let hostingController = UIHostingController(rootView: button)
+        hostingController.view.backgroundColor = .clear
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.didMove(toParent: self)
+        
+        self.profilePictureButtonHostingController = hostingController
+        
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: pageTitleLabel.bottomAnchor, constant: 30),
+            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            hostingController.view.heightAnchor.constraint(equalToConstant: 70)
+        ])
+    }
+    
+    private func configureTextFields() {
+        let textFieldsView = ProfileSettingsTextFieldsView(
+            email: Binding(
+                get: { [weak self] in self?.email ?? "" },
+                set: { [weak self] in self?.email = $0 }
+            ),
+            name: Binding(
+                get: { [weak self] in self?.name ?? "" },
+                set: { [weak self] in self?.name = $0 }
+            )
+        )
+        
+        let hostingController = UIHostingController(rootView: textFieldsView)
+        hostingController.view.backgroundColor = .clear
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.didMove(toParent: self)
+        
+        self.textFieldsHostingController = hostingController
+        
+        guard let buttonHostingController = profilePictureButtonHostingController else {
+            return
+        }
+        
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: buttonHostingController.view.bottomAnchor, constant: 30),
+            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
+            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30)
+        ])
+    }
+    
+    private func configureSaveButton() {
+        let reusableButton = ReusableMainButton(title: "შენახვა") { [weak self] in
+            self?.saveButtonTapped()
+        }
+        
+        let hostingController = UIHostingController(rootView: reusableButton)
+        hostingController.view.backgroundColor = .clear
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.didMove(toParent: self)
+        
+        self.reusableButtonHostingController = hostingController
+        
+        NSLayoutConstraint.activate([
+            hostingController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
+            hostingController.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            hostingController.view.widthAnchor.constraint(equalToConstant: 265),
+            hostingController.view.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    
+    private func updateProfilePictureButton() {
+        if let hostingController = profilePictureButtonHostingController {
+            let button = ReusableProfilePictureButton(
+                action: { [weak self] in
+                    self?.choosePictureTapped()
+                },
+                imageUrl: currentProfileImageUrl,
+                selectedImage: selectedImage
+            )
+            hostingController.rootView = button
+        }
+    }
+    
+    private func updateTextFields() {
+        if let hostingController = textFieldsHostingController {
+            let textFieldsView = ProfileSettingsTextFieldsView(
+                email: Binding(
+                    get: { [weak self] in self?.email ?? "" },
+                    set: { [weak self] in self?.email = $0 }
+                ),
+                name: Binding(
+                    get: { [weak self] in self?.name ?? "" },
+                    set: { [weak self] in self?.name = $0 }
+                )
+            )
+            hostingController.rootView = textFieldsView
+        }
+    }
+    
+    private func getCurrentUserName(name: String) {
+        self.name = viewModel.currentUser?.name ?? ""
+    }
+    
+    private func loadUserData() {
+        viewModel.loadCurrentUser()
+    }
+    
+    //MARK: - Actions
+    private func choosePictureTapped() {
+        var configuration = PHPickerConfiguration()
+        configuration.filter = .images
+        configuration.selectionLimit = 1
+        
+        let picker = PHPickerViewController(configuration: configuration)
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+    
+    private func saveButtonTapped() {
+        let _ = selectedImage != nil
+        viewModel.saveChanges(name: name, email: email, image: selectedImage)
+    }
+    
+    private func showAlert(message: String, completion: (() -> Void)? = nil) {
+        let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "კარგი", style: .default) { _ in
+            completion?()
+        })
+        present(alert, animated: true)
+    }
+}
+
+//MARK: - PHPickerViewControllerDelegate
+extension ProfileSettingsViewController: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        
+        guard let result = results.first else { return }
+        
+        if result.itemProvider.canLoadObject(ofClass: UIImage.self) {
+            result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
+                DispatchQueue.main.async {
+                    if let image = image as? UIImage {
+                        self?.selectedImage = image
+                    } else if let error = error {
+                        self?.showAlert(message: "სურათის ჩატვირთვა ვერ მოხერხდა: \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
+    }
 }
