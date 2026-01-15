@@ -33,7 +33,9 @@ final class MainTabCoordinator: Coordinator {
         let homeViewController = UIHostingController(rootView: homeView)
         homeViewController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "house"), tag: AppTab.home.rawValue)
         
-        let newsViewController = UIViewController()
+        let newsViewModel = NewsViewModel()
+        let newsView = NewsView(viewModel: newsViewModel)
+        let newsViewController = UIHostingController(rootView: newsView)
         newsViewController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "newspaper"), tag: AppTab.news.rawValue)
         
         let searchViewController = UIViewController()
