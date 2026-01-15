@@ -48,8 +48,8 @@ final class MainTabCoordinator: Coordinator {
         profileViewController.onShowInterests = { [weak self] in
             self?.showInterests()
         }
-        profileViewController.onSettings = { [weak self] in
-            self?.showSettings()
+        profileViewController.onSettings = { [weak self, weak profileViewController] in
+            self?.showSettings(from: profileViewController)
         }
         
         tabBarController.viewControllers = [homeViewController, newsViewController, searchViewController, articleViewController, profileViewController,]
@@ -71,8 +71,13 @@ final class MainTabCoordinator: Coordinator {
         tabBarController?.present(interestsNavigationController, animated: true)
     }
     
-    private func showSettings() {
-        let profileSettingsViewController = ProfileSettingsViewController()
+    private func showSettings(from profileViewController: ProfileViewController?) {
+        let currentUser = profileViewController?.currentUser
+        let currentProfileImage = profileViewController?.currentProfileImage
+        let profileSettingsViewController = ProfileSettingsViewController(
+            initialUser: currentUser,
+            initialProfileImage: currentProfileImage
+        )
         navigationController.pushViewController(profileSettingsViewController, animated: true)
     }
 }

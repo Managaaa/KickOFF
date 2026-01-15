@@ -5,6 +5,8 @@ import PhotosUI
 class ProfileSettingsViewController: UIViewController {
     //MARK: - Properties
     private let viewModel = ProfileViewModel()
+    private let initialUser: User?
+    private let initialProfileImage: UIImage?
     
     private var name: String = "" {
         didSet {
@@ -27,6 +29,12 @@ class ProfileSettingsViewController: UIViewController {
         }
     }
     
+    private var preloadedImage: UIImage? = nil {
+        didSet {
+            updateProfilePictureButton()
+        }
+    }
+    
     private let pageTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "პროფილის რედაქტირება"
@@ -42,7 +50,19 @@ class ProfileSettingsViewController: UIViewController {
     private var textFieldsHostingController: UIHostingController<ProfileSettingsTextFieldsView>?
     private var reusableButtonHostingController: UIHostingController<ReusableMainButton>?
     
-    //MARK: - Init
+    //MARK: - Inits
+    init(initialUser: User? = nil, initialProfileImage: UIImage? = nil) {
+        self.initialUser = initialUser
+        self.initialProfileImage = initialProfileImage
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        self.initialUser = nil
+        self.initialProfileImage = nil
+        super.init(coder: coder)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .customBackground
@@ -74,6 +94,10 @@ class ProfileSettingsViewController: UIViewController {
             self?.currentProfileImageUrl = imageUrl
             self?.selectedImage = nil
         }
+        
+        viewModel.onImagePreloaded = { [weak self] image in
+            self?.preloadedImage = image
+        }
     }
     
     private func setupUI() {
@@ -95,12 +119,13 @@ class ProfileSettingsViewController: UIViewController {
     }
     
     private func configureProfilePictureButton() {
+        let imageToShow = selectedImage ?? preloadedImage
         let button = ReusableProfilePictureButton(
             action: { [weak self] in
                 self?.choosePictureTapped()
             },
-            imageUrl: currentProfileImageUrl,
-            selectedImage: selectedImage
+            imageUrl: imageToShow == nil ? currentProfileImageUrl : nil,
+            selectedImage: imageToShow
         )
         
         let hostingController = UIHostingController(rootView: button)
@@ -178,16 +203,18 @@ class ProfileSettingsViewController: UIViewController {
     
     private func updateProfilePictureButton() {
         if let hostingController = profilePictureButtonHostingController {
+            let imageToShow = selectedImage ?? preloadedImage
             let button = ReusableProfilePictureButton(
                 action: { [weak self] in
                     self?.choosePictureTapped()
                 },
-                imageUrl: currentProfileImageUrl,
-                selectedImage: selectedImage
+                imageUrl: imageToShow == nil ? currentProfileImageUrl : nil,
+                selectedImage: imageToShow
             )
             hostingController.rootView = button
         }
     }
+    
     
     private func updateTextFields() {
         if let hostingController = textFieldsHostingController {
@@ -205,11 +232,29 @@ class ProfileSettingsViewController: UIViewController {
         }
     }
     
-    private func getCurrentUserName(name: String) {
-        self.name = viewModel.currentUser?.name ?? ""
-    }
-    
     private func loadUserData() {
+        if let user = initialUser {
+            self.name = user.name
+            self.email = user.email
+            self.currentProfileImageUrl = user.profileImageUrl
+            viewModel.currentUser = user // avoid duplicate fetch
+            
+            if let image = initialProfileImage {
+                self.preloadedImage = image
+            } else if let imageUrlString = user.profileImageUrl, let url = URL(string: imageUrlString) {
+                viewModel.preloadImage(from: url)
+            }
+        } else {
+            if let cachedUser = viewModel.currentUser { //check if viewmodel has cached data
+                self.name = cachedUser.name
+                self.email = cachedUser.email
+                self.currentProfileImageUrl = cachedUser.profileImageUrl
+                if let imageUrlString = cachedUser.profileImageUrl, let url = URL(string: imageUrlString) {
+                    viewModel.preloadImage(from: url)
+                }
+            }
+        }
+        
         viewModel.loadCurrentUser()
     }
     

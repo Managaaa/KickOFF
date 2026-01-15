@@ -17,6 +17,7 @@ class ProfileViewModel {
     var onSaveComplete: (() -> Void)?
     var onImageUploadSuccess: ((String) -> Void)?
     var onProfileUpdateSuccess: (() -> Void)?
+    var onImagePreloaded: ((UIImage) -> Void)?
     var isLoading: Bool = false
     
     private(set) var interests: [Interest] = []
@@ -183,6 +184,21 @@ class ProfileViewModel {
                 self?.interests = interests
                 self?.isLoading = false
                 self?.onInterestsLoaded?()
+            }
+        }
+    }
+    
+    func preloadImage(from url: URL) {
+        Task {
+            do {
+                let (data, _) = try await URLSession.shared.data(from: url)
+                if let image = UIImage(data: data) {
+                    await MainActor.run {
+                        onImagePreloaded?(image)
+                    }
+                }
+            } catch {
+                
             }
         }
     }

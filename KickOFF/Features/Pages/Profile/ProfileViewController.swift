@@ -8,6 +8,17 @@ class ProfileViewController: UIViewController {
     var onShowInterests: (() -> Void)?
     var onSettings: (() -> Void)?
     
+    var currentUser: User? {
+        return viewModel.currentUser
+    }
+    
+    var currentProfileImage: UIImage? {
+        if let image = profileCoverImage.image, image != UIImage(named: "pfp") {
+            return image
+        }
+        return nil
+    }
+    
     private let scrollView: UIScrollView = {
         let view = UIScrollView()
         view.translatesAutoresizingMaskIntoConstraints = false
