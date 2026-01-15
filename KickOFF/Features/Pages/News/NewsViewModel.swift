@@ -4,6 +4,7 @@ import Combine
 class NewsViewModel: ObservableObject {
     @Published var news: [News] = []
     @Published var isLoading: Bool = false
+    @Published var selectedCategory: NewsCategoryType = .georgianSports
     
     private let newsService: NewsService
     
@@ -23,6 +24,12 @@ class NewsViewModel: ObservableObject {
                 self?.isLoading = false
             })
         }
+    }
+    
+    func selectCategory(_ category: NewsCategoryType) {
+        selectedCategory = category
+        // TODO: filter news based on selected category
+        fetchNews()
     }
     
     func timeAgo(from date: Date) -> String {

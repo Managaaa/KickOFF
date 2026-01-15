@@ -19,6 +19,30 @@ struct NewsView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.top, 70)
                 
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 24) {
+                        ForEach(NewsCategoryType.allCases) { category in
+                            Button {
+                                viewModel.selectCategory(category)
+                            } label: {
+                                VStack(spacing: 8) {
+                                    Text(category.rawValue)
+                                        .font(.system(size: 14))
+                                        .foregroundStyle(
+                                            viewModel.selectedCategory == category ? .white : .gray
+                                        )
+                                    
+                                    Rectangle()
+                                        .fill(viewModel.selectedCategory == category ? Color.white : Color.clear)
+                                        .frame(height: 2)
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 10)
+                }
+                
                 ScrollView {
                     VStack(spacing: 20) {
                         if viewModel.isLoading {
