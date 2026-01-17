@@ -11,23 +11,9 @@ struct BestOfsCardView: View {
                 .cornerRadius(12)
             VStack(alignment: .leading, spacing: 12) {
                 
-                AsyncImage(url: URL(string: image)) { phase in
-                    if let loadedImage = phase.image {
-                        loadedImage
-                            .resizable()
-                            .scaledToFill()
-                            .frame(height: 180)
-                            .clipped()
-                            .cornerRadius(12)
-                    } else {
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.3))
-                            .frame(height: 180)
-                            .cornerRadius(12)
-                    }
-                }
-                .frame(height: 180)
-                .clipped()
+                KingfisherImageLoader(imageUrl: image, width: nil, height: 180, cornerRadius: 12, placeholder: Image(systemName: "photo"))
+                    .frame(height: 180)
+                    .clipped()
                 
                 Text(title)
                     .font(FontType.medium.swiftUIFont(size: 12))

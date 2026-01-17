@@ -24,22 +24,8 @@ struct NewsCardView: View {
                 
                 Spacer()
                 
-                AsyncImage(url: URL(string: image)) { phase in
-                    if let loadedImage = phase.image {
-                        loadedImage
-                            .resizable()
-                            .frame(width: 125, height: 100)
-                            .scaledToFill()
-                            .cornerRadius(10)
-                            .clipped()
-                            .padding(.bottom, 50)
-                    } else {
-                        Rectangle()
-                            .frame(width: 130, height: 100)
-                            .padding(.bottom, 50)
-                            .foregroundStyle(.clear)
-                    }
-                }
+                KingfisherImageLoader.news(imageUrl: image, width: 125, height: 100, cornerRadius: 10, placeholder: Image(systemName: "photo"))
+                    .padding(.bottom, 50)
             }
             .padding(.top, 2)
             .padding(.horizontal, 20)
