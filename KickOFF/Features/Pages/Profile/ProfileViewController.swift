@@ -239,13 +239,14 @@ class ProfileViewController: UIViewController {
         
         viewModel.onUserLoaded = { [weak self] user in
             self?.updateUI(with: user)
+            self?.viewModel.updateUserInterests()
         }
         
         viewModel.onError = { [weak self] errorMessage in
             self?.showErrorAlert(message: errorMessage)
         }
         
-        viewModel.onInterestsLoaded = { [weak self] in
+        viewModel.onUserInterestsUpdated = { [weak self] in
             self?.interestCollectionView.reloadData()
         }
         
@@ -286,7 +287,7 @@ class ProfileViewController: UIViewController {
 //MARK: - UI collectionview Delegate & Datasource
 extension ProfileViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.interests.count
+        viewModel.userInterests.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -294,7 +295,7 @@ extension ProfileViewController: UICollectionViewDelegate, UICollectionViewDataS
             return UICollectionViewCell()
         }
         
-        let interest = viewModel.interests[indexPath.item]
+        let interest = viewModel.userInterests[indexPath.item]
         cell.configure(with: interest)
         return cell
     }
