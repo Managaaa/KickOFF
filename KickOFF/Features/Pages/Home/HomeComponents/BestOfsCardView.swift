@@ -11,7 +11,7 @@ struct BestOfsCardView: View {
                 .cornerRadius(12)
             VStack(alignment: .leading, spacing: 12) {
                 
-                KingfisherImageLoader(imageUrl: image, width: nil, height: 180, cornerRadius: 12, placeholder: Image(systemName: "photo"))
+                KingfisherImageLoader.news(imageUrl: image, width: nil, height: 180, cornerRadius: 12, placeholder: Image(systemName: "photo"))
                     .frame(height: 180)
                     .clipped()
                 

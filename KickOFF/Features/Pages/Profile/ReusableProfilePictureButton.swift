@@ -17,25 +17,8 @@ struct ReusableProfilePictureButton: View {
                             .scaledToFill()
                             .frame(width: 70, height: 70)
                             .clipShape(Circle())
-                    } else if let imageUrl = imageUrl, let url = URL(string: imageUrl) {
-                        AsyncImage(url: url) { image in
-                            image
-                                .resizable()
-                                .scaledToFill()
-                        } placeholder: {
-                            Image("changephoto")
-                                .resizable()
-                                .scaledToFit()
-                        }
-                        .frame(width: 70, height: 70)
-                        .clipShape(Circle())
                     } else {
-                        Image("changephoto")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 70, height: 70)
-                            .background(Color(uiColor: .systemGray5))
-                            .clipShape(Circle())
+                        KingfisherImageLoader.profilePicture(imageUrl: imageUrl, size: 70, placeholder: Image("changephoto"))
                     }
                 }
                 
