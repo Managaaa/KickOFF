@@ -33,7 +33,7 @@ struct NewsView: View {
                                         )
                                     
                                     Rectangle()
-                                        .fill(viewModel.selectedCategory == category ? Color.white : Color.clear)
+                                        .fill(viewModel.selectedCategory == category ? Color.customGreen : Color.clear)
                                         .frame(height: 2)
                                 }
                             }
