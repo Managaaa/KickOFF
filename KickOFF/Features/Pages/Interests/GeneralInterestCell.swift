@@ -1,4 +1,5 @@
 import UIKit
+import Kingfisher
 
 class GeneralInterestCell: UICollectionViewCell {
     //MARK: - Properties
@@ -67,20 +68,13 @@ class GeneralInterestCell: UICollectionViewCell {
     func configure(with interest: Interest) {
         interestTitleLabel.text = interest.title
         
-        guard let url = URL(string: interest.imageUrl) else {
-            return
-        }
-        
-        Task {
-            guard let (data, _) = try? await URLSession.shared.data(from: url),
-                  let image = UIImage(data: data) else {
-                return
-            }
-            
-            await MainActor.run {
-                self.interestCircleView.image = image
-            }
-        }
+        interestCircleView.loadInterestImage(from: interest.imageUrl, size: 70, placeholder: UIImage(named: "circle"))
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        interestCircleView.kf.cancelDownloadTask()
+        interestCircleView.image = nil
     }
     
 }

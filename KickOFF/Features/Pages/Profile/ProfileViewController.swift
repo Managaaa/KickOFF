@@ -1,5 +1,6 @@
 import UIKit
 import SwiftUI
+import Kingfisher
 
 class ProfileViewController: UIViewController {
     //MARK: - Properties
@@ -28,7 +29,7 @@ class ProfileViewController: UIViewController {
     private let pageTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "პროფილი"
-        label.font = FontType.bold.uiFont(size: 20)
+        label.font = FontType.black.uiFont(size: 20)
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -255,28 +256,7 @@ class ProfileViewController: UIViewController {
         usernameLabel.text = user.name
         usermailLabel.text = user.email
         
-        if let imageUrlString = user.profileImageUrl, let imageUrl = URL(string: imageUrlString) {
-            loadImage(from: imageUrl)
-        } else {
-            profileCoverImage.image = UIImage(named: "pfp")
-        }
-    }
-    
-    private func loadImage(from url: URL) {
-        Task {
-            do {
-                let (data, _) = try await URLSession.shared.data(from: url)
-                if let image = UIImage(data: data) {
-                    await MainActor.run {
-                        self.profileCoverImage.image = image
-                    }
-                }
-            } catch {
-                await MainActor.run {
-                    self.profileCoverImage.image = UIImage(named: "pfp")
-                }
-            }
-        }
+        profileCoverImage.loadProfilePicture(from: user.profileImageUrl, size: 70, placeholder: UIImage(named: "pfp"))
     }
     
     private func showErrorAlert(message: String) {

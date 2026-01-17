@@ -7,7 +7,7 @@ class InterestsPageViewController: UIViewController {
     private let pageTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "ინტერესები"
-        label.font = FontType.bold.uiFont(size: 20)
+        label.font = FontType.black.uiFont(size: 20)
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -16,7 +16,7 @@ class InterestsPageViewController: UIViewController {
     private let subTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "აირჩიე შენზე მორგებული ინტერესები"
-        label.font = FontType.regular.uiFont(size: 14)
+        label.font = FontType.regular.uiFont(size: 12)
         label.textColor = .customGreen
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -51,7 +51,7 @@ class InterestsPageViewController: UIViewController {
         view.addSubview(pageTitleLabel)
         
         NSLayoutConstraint.activate([
-            pageTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 50),
+            pageTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 70),
             pageTitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
@@ -60,7 +60,7 @@ class InterestsPageViewController: UIViewController {
         view.addSubview(subTitleLabel)
         
         NSLayoutConstraint.activate([
-            subTitleLabel.topAnchor.constraint(equalTo: pageTitleLabel.bottomAnchor, constant: 20),
+            subTitleLabel.topAnchor.constraint(equalTo: pageTitleLabel.bottomAnchor, constant: 14),
             subTitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }

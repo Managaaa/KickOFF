@@ -62,15 +62,7 @@ final class MainTabCoordinator: Coordinator {
     //MARK: - Navigation Functions
     private func showInterests() {
         let interestsViewController = InterestsPageViewController()
-        let interestsNavigationController = UINavigationController(rootViewController: interestsViewController)
-        interestsNavigationController.modalPresentationStyle = .pageSheet
-        
-        if let sheet = interestsNavigationController.sheetPresentationController {
-            sheet.detents = [.medium(), .large()]
-            sheet.prefersGrabberVisible = true
-        }
-        
-        tabBarController?.present(interestsNavigationController, animated: true)
+        navigationController.pushViewController(interestsViewController, animated: true)
     }
     
     private func showSettings(from profileViewController: ProfileViewController?) {
