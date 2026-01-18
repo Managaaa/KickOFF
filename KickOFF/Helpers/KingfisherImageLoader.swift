@@ -24,7 +24,9 @@ struct KingfisherImageLoader: View {
     var body: some View {
         Group {
             if let imageUrl = imageUrl, !imageUrl.isEmpty, let url = URL(string: imageUrl) {
-                KFImage(url)
+                let processor = getImageProcessor()
+                KFImage(source: .network(url))
+                    .setProcessor(processor)
                     .placeholder {
                         placeholder
                             .resizable()
@@ -45,6 +47,15 @@ struct KingfisherImageLoader: View {
                     .cornerRadius(cornerRadius)
             }
         }
+    }
+    
+    private func getImageProcessor() -> ImageProcessor {
+        guard let width = width, let height = height else {
+            return DefaultImageProcessor()
+        }
+        let scale = UIScreen.main.scale
+        let targetSize = CGSize(width: width * scale, height: height * scale)
+        return ResizingImageProcessor(referenceSize: targetSize, mode: .aspectFill)
     }
 }
 
