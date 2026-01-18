@@ -33,6 +33,9 @@ final class MainTabCoordinator: Coordinator {
             viewModel: homeViewModel,
             onBestOfNewsTap: { [weak self] news in
                 self?.showBestOfNewsDetails(news)
+            },
+            onNewsTap: { [weak self] news in
+                self?.showNewsDetails(news)
             }
         )
         let homeViewController = UIHostingController(rootView: homeView)
@@ -81,8 +84,14 @@ final class MainTabCoordinator: Coordinator {
     }
     
     private func showBestOfNewsDetails(_ news: BestOfNews) {
-        let bestOfNewsView = BestOfNewsView(news: news)
-        let bestOfNewsViewController = UIHostingController(rootView: bestOfNewsView)
-        navigationController.pushViewController(bestOfNewsViewController, animated: true)
+        let bestOfNewsDetailView = BestOfNewsDetailView(news: news)
+        let bestOfNewsDetailViewController = UIHostingController(rootView: bestOfNewsDetailView)
+        navigationController.pushViewController(bestOfNewsDetailViewController, animated: true)
+    }
+    
+    private func showNewsDetails(_ news: News) {
+        let newsDetailView = NewsDetailView(news: news)
+        let newsDetailViewController = UIHostingController(rootView: newsDetailView)
+        navigationController.pushViewController(newsDetailViewController, animated: true)
     }
 }

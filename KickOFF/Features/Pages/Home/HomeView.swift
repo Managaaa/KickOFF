@@ -3,10 +3,12 @@ import SwiftUI
 struct HomeView: View {
     @StateObject var viewModel: HomeViewModel
     var onBestOfNewsTap: ((BestOfNews) -> Void)?
+    var onNewsTap: ((News) -> Void)?
     
-    init(viewModel: HomeViewModel = HomeViewModel(), onBestOfNewsTap: ((BestOfNews) -> Void)? = nil) {
+    init(viewModel: HomeViewModel = HomeViewModel(), onBestOfNewsTap: ((BestOfNews) -> Void)? = nil, onNewsTap: ((News) -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.onBestOfNewsTap = onBestOfNewsTap
+        self.onNewsTap = onNewsTap
     }
     
     var body: some View {
@@ -72,6 +74,9 @@ struct HomeView: View {
                         } else {
                             ForEach(viewModel.news) { news in
                                 NewsCardView(title: news.title, subtitle: news.subtitle, image: news.imageUrl, date: viewModel.timeAgo(from: news.date))
+                                    .onTapGesture {
+                                        onNewsTap?(news)
+                                    }
                             }
                         }
                     }

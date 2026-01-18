@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct BestOfNewsView: View {
+struct BestOfNewsDetailView: View {
     let news: BestOfNews
     
     var body: some View {
@@ -14,10 +14,21 @@ struct BestOfNewsView: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.top, 70)
+                    .padding(.horizontal, 16)
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 12) {
-                        KingfisherImageLoader.news(imageUrl: news.imageUrl, width: nil, height: 240, cornerRadius: 10, placeholder: Image(systemName: "photo"))
+                        GeometryReader { geometry in
+                            KingfisherImageLoader.news(
+                                imageUrl: news.imageUrl,
+                                width: geometry.size.width,
+                                height: 240,
+                                cornerRadius: 10,
+                                placeholder: Image(systemName: "photo")
+                            )
+                        }
+                        .frame(height: 240)
+                        .clipped()
                         
                         Text(news.title)
                             .font(FontType.medium.swiftUIFont(size: 16))
@@ -33,11 +44,11 @@ struct BestOfNewsView: View {
                                 .foregroundStyle(.white)
                         }
                     }
+                    .padding(.horizontal, 16)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .ignoresSafeArea(edges: .top)
-            .padding(.horizontal, 16)
         }
     }
 }
