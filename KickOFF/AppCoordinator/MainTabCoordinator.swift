@@ -29,7 +29,12 @@ final class MainTabCoordinator: Coordinator {
         self.tabBarController = tabBarController
         
         let homeViewModel = HomeViewModel()
-        let homeView = HomeView(viewModel: homeViewModel)
+        let homeView = HomeView(
+            viewModel: homeViewModel,
+            onBestOfNewsTap: { [weak self] news in
+                self?.showBestOfNewsDetails(news)
+            }
+        )
         let homeViewController = UIHostingController(rootView: homeView)
         homeViewController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "house"), tag: AppTab.home.rawValue)
         
@@ -73,5 +78,11 @@ final class MainTabCoordinator: Coordinator {
             initialProfileImage: currentProfileImage
         )
         navigationController.pushViewController(profileSettingsViewController, animated: true)
+    }
+    
+    private func showBestOfNewsDetails(_ news: BestOfNews) {
+        let bestOfNewsView = BestOfNewsView(news: news)
+        let bestOfNewsViewController = UIHostingController(rootView: bestOfNewsView)
+        navigationController.pushViewController(bestOfNewsViewController, animated: true)
     }
 }

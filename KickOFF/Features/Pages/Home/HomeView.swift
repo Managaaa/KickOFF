@@ -2,9 +2,11 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject var viewModel: HomeViewModel
+    var onBestOfNewsTap: ((BestOfNews) -> Void)?
     
-    init(viewModel: HomeViewModel = HomeViewModel()) {
+    init(viewModel: HomeViewModel = HomeViewModel(), onBestOfNewsTap: ((BestOfNews) -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: viewModel)
+        self.onBestOfNewsTap = onBestOfNewsTap
     }
     
     var body: some View {
@@ -40,6 +42,9 @@ struct HomeView: View {
                                         ForEach(viewModel.bestOfNews) { news in
                                             BestOfsCardView(title: news.title, subtitle: news.subtitle, image: news.imageUrl)
                                                 .frame(width: geometry.size.width)
+                                                .onTapGesture {
+                                                    onBestOfNewsTap?(news)
+                                                }
                                         }
                                     }
                                     .scrollTargetLayout()

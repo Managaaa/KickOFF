@@ -18,4 +18,16 @@ final class InterestService {
                 }
         }
     }
+    
+    func addUserInterest(uid: String, interestId: String) async throws {
+        try await db.collection("users").document(uid).updateData([
+            "interestIds": FieldValue.arrayUnion([interestId])
+        ])
+    }
+    
+    func removeUserInterest(uid: String, interestId: String) async throws {
+        try await db.collection("users").document(uid).updateData([
+            "interestIds": FieldValue.arrayRemove([interestId])
+        ])
+    }
 }

@@ -23,10 +23,11 @@ class GeneralInterestCell: UICollectionViewCell {
     
     private let plusButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "plusbutton"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
+    
+    private var onToggleSelection: (() -> Void)?
     
     //MARK: - Inits
     override init(frame: CGRect) {
@@ -41,6 +42,11 @@ class GeneralInterestCell: UICollectionViewCell {
     //MARK: - Setup
     private func setupUI() {
         configureInterestCircleView()
+        plusButton.addTarget(self, action: #selector(plusButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc private func plusButtonTapped() {
+        onToggleSelection?()
     }
     
     private func configureInterestCircleView() {
@@ -65,14 +71,19 @@ class GeneralInterestCell: UICollectionViewCell {
         ])
     }
     
-    func configure(with interest: Interest) {
+    func configure(with interest: Interest, isSelected: Bool, onToggle: @escaping () -> Void) {
         interestTitleLabel.text = interest.title
+        onToggleSelection = onToggle
+        
+        let imageName = isSelected ? "minusbutton" : "plusbutton"
+        plusButton.setImage(UIImage(named: imageName), for: .normal)
         
         interestCircleView.loadInterestImage(from: interest.imageUrl, size: 70, placeholder: UIImage(named: "circle"))
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        onToggleSelection = nil
         interestCircleView.kf.cancelDownloadTask()
         interestCircleView.image = nil
     }

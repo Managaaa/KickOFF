@@ -1,0 +1,43 @@
+import SwiftUI
+
+struct BestOfNewsView: View {
+    let news: BestOfNews
+    
+    var body: some View {
+        ZStack {
+            Color.customBackground
+                .ignoresSafeArea()
+            
+            VStack(spacing: 30) {
+                Text("BEST OF 2025")
+                    .font(FontType.black.swiftUIFont(size: 20))
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 70)
+                
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 12) {
+                        KingfisherImageLoader.news(imageUrl: news.imageUrl, width: nil, height: 240, cornerRadius: 10, placeholder: Image(systemName: "photo"))
+                        
+                        Text(news.title)
+                            .font(FontType.medium.swiftUIFont(size: 16))
+                            .foregroundStyle(.customGreen)
+                        
+                        VStack(alignment: .leading, spacing: 30) {
+                            Text(news.subtitle)
+                                .font(FontType.bold.swiftUIFont(size: 16))
+                                .foregroundStyle(.white)
+                            
+                            Text(news.text)
+                                .font(FontType.regular.swiftUIFont(size: 14))
+                                .foregroundStyle(.white)
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .ignoresSafeArea(edges: .top)
+            .padding(.horizontal, 16)
+        }
+    }
+}

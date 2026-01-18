@@ -3,6 +3,7 @@ import UIKit
 class InterestsPageViewController: UIViewController {
     //MARK: - Properties
     private let viewModel = ProfileViewModel()
+    private var selectedInterestIds: Set<String> = []
     
     private let pageTitleLabel: UILabel = {
         let label = UILabel()
@@ -72,6 +73,7 @@ class InterestsPageViewController: UIViewController {
         interestsCollectionView.dataSource = self
         
         interestsCollectionView.register(GeneralInterestCell.self, forCellWithReuseIdentifier: "GeneralInterestCell")
+        interestsCollectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 24, right: 0)
         
         NSLayoutConstraint.activate([
             interestsCollectionView.topAnchor.constraint(equalTo: subTitleLabel.bottomAnchor, constant: 30),
@@ -83,8 +85,26 @@ class InterestsPageViewController: UIViewController {
     
     private func setupViewModel() {
         viewModel.onInterestsLoaded = { [weak self] in
-            self?.interestsCollectionView.reloadData()
+            DispatchQueue.main.async {
+                self?.interestsCollectionView.reloadData()
+            }
         }
+        viewModel.onUserLoaded = { [weak self] user in
+            DispatchQueue.main.async {
+                self?.selectedInterestIds = Set(user.interestIds ?? [])
+                self?.interestsCollectionView.reloadData()
+            }
+        }
+        viewModel.onError = { [weak self] error in
+            DispatchQueue.main.async {
+                print(error)
+                if let userInterestIds = self?.viewModel.currentUser?.interestIds {
+                    self?.selectedInterestIds = Set(userInterestIds)
+                    self?.interestsCollectionView.reloadData()
+                }
+            }
+        }
+        viewModel.loadCurrentUser()
         viewModel.fetchInterests()
     }
     
@@ -100,16 +120,53 @@ extension InterestsPageViewController: UICollectionViewDelegate, UICollectionVie
             return UICollectionViewCell()
         }
         let interest = viewModel.interests[indexPath.item]
-        cell.configure(with: interest)
+        let isSelected = selectedInterestIds.contains(interest.id)
+        cell.configure(with: interest, isSelected: isSelected) { [weak self] in
+            self?.toggleInterest(interest)
+        }
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-            let width = collectionView.frame.width
-            return CGSize(width: width, height: 70)
+        let width = collectionView.frame.width
+        return CGSize(width: width, height: 70)
+    }
+    
+    private func toggleInterest(_ interest: Interest) {
+        let isSelected = selectedInterestIds.contains(interest.id)
+        
+        if isSelected {
+            selectedInterestIds.remove(interest.id)
+        } else {
+            selectedInterestIds.insert(interest.id)
         }
+        reloadCell(for: interest)
+        
+        if isSelected {
+            viewModel.removeUserInterest(interest) { [weak self] in
+                DispatchQueue.main.async {
+                    if let userInterestIds = self?.viewModel.currentUser?.interestIds {
+                        self?.selectedInterestIds = Set(userInterestIds)
+                    }
+                    self?.reloadCell(for: interest)
+                }
+            }
+        } else {
+            viewModel.addUserInterest(interest) { [weak self] in
+                DispatchQueue.main.async {
+                    if let userInterestIds = self?.viewModel.currentUser?.interestIds {
+                        self?.selectedInterestIds = Set(userInterestIds)
+                    }
+                    self?.reloadCell(for: interest)
+                }
+            }
+        }
+    }
     
-    
+    private func reloadCell(for interest: Interest) {
+        guard let index = viewModel.interests.firstIndex(where: { $0.id == interest.id}) else { return }
+        interestsCollectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
+    }
 }
 
 #Preview {

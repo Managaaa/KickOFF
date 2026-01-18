@@ -19,28 +19,30 @@ struct NewsView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.top, 70)
                 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 24) {
-                        ForEach(NewsCategoryType.allCases) { category in
-                            Button {
-                                viewModel.selectCategory(category)
-                            } label: {
-                                VStack(spacing: 8) {
-                                    Text(category.rawValue)
-                                        .font(.system(size: 14))
-                                        .foregroundStyle(
-                                            viewModel.selectedCategory == category ? .white : .gray
-                                        )
-                                    
-                                    Rectangle()
-                                        .fill(viewModel.selectedCategory == category ? Color.customGreen : Color.clear)
-                                        .frame(height: 2)
+                if !viewModel.categories.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 24) {
+                            ForEach(viewModel.categories) { category in
+                                Button {
+                                    viewModel.selectCategory(category)
+                                } label: {
+                                    VStack(spacing: 8) {
+                                        Text(category.title)
+                                            .font(FontType.light.swiftUIFont(size: 12))
+                                            .foregroundStyle(
+                                                viewModel.selectedCategory?.id == category.id ? .white : .gray
+                                            )
+                                        
+                                        Rectangle()
+                                            .fill(viewModel.selectedCategory?.id == category.id ? Color.customGreen : Color.clear)
+                                            .frame(height: 2)
+                                    }
                                 }
                             }
                         }
+                        .padding(.horizontal, 24)
+                        .padding(.top, 10)
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.top, 10)
                 }
                 
                 ScrollView {
@@ -61,9 +63,8 @@ struct NewsView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .ignoresSafeArea(edges: .top)
         }
+        .onAppear {
+            viewModel.fetchUserInterests()
+        }
     }
-}
-
-#Preview {
-    NewsView()
 }

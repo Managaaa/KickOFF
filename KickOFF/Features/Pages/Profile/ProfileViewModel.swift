@@ -14,6 +14,7 @@ class ProfileViewModel {
     var onLogoutSuccess: (() -> Void)?
     var onLogoutError: ((String) -> Void)?
     var onInterestsLoaded: (() -> Void)?
+    var onUserInterestsUpdated: (() -> Void)?
     var onSaveComplete: (() -> Void)?
     var onImageUploadSuccess: ((String) -> Void)?
     var onProfileUpdateSuccess: (() -> Void)?
@@ -21,6 +22,7 @@ class ProfileViewModel {
     var isLoading: Bool = false
     
     private(set) var interests: [Interest] = []
+    private(set) var userInterests: [Interest] = []
     
     init(authService: FirebaseAuthService = .shared, interestService: InterestService = InterestService(), storageService: StorageService = .shared) {
         self.authService = authService
@@ -129,7 +131,8 @@ class ProfileViewModel {
                         name: name ?? user.name,
                         email: email ?? user.email,
                         createdAt: user.createdAt,
-                        profileImageUrl: imageUrl
+                        profileImageUrl: imageUrl,
+                        interestIds: user.interestIds
                     )
                 }
                 
@@ -157,7 +160,8 @@ class ProfileViewModel {
                         name: name,
                         email: email,
                         createdAt: user.createdAt,
-                        profileImageUrl: user.profileImageUrl
+                        profileImageUrl: user.profileImageUrl,
+                        interestIds: user.interestIds
                     )
                 }
                 
@@ -183,7 +187,60 @@ class ProfileViewModel {
             await MainActor.run {
                 self?.interests = interests
                 self?.isLoading = false
+                if self?.currentUser != nil {
+                    self?.updateUserInterests()
+                }
                 self?.onInterestsLoaded?()
+            }
+        }
+    }
+    
+    func updateUserInterests() {
+        let ids = currentUser?.interestIds ?? []
+        userInterests = ids.compactMap { id in interests.first(where: { $0.id == id}) }
+        onUserInterestsUpdated?()
+    }
+    
+    func addUserInterest(_ interest: Interest, onComplete: (() -> Void)? = nil) {
+        guard let uid = currentUser?.id else {
+            onError?("მომხმარებელი ვერ მოიძებნა")
+            return
+        }
+        Task {
+            do {
+                try await interestService.addUserInterest(uid: uid, interestId: interest.id)
+                await MainActor.run {
+                    var ids = currentUser?.interestIds ?? []
+                    if !ids.contains(interest.id) { ids.append(interest.id)
+                    }
+                    currentUser = currentUser.flatMap { User(id: $0.id, name: $0.name, email: $0.email, createdAt: $0.createdAt, profileImageUrl: $0.profileImageUrl, interestIds: ids)}
+                    updateUserInterests()
+                    onComplete?()
+                }
+            } catch {
+                await MainActor.run {
+                    onError?(error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    func removeUserInterest(_ interest: Interest, onComplete: (() -> Void)? = nil) {
+        guard let uid = currentUser?.id else {
+            onError?("მომხმარებელი ვერ მოიძებნა")
+            return
+        }
+        Task {
+            do {
+                try await interestService.removeUserInterest(uid: uid, interestId: interest.id)
+                await MainActor.run {
+                    let ids = (currentUser?.interestIds ?? []).filter { $0 != interest.id }
+                    currentUser = currentUser.flatMap { User(id: $0.id, name: $0.name, email: $0.email, createdAt: $0.createdAt, profileImageUrl: $0.profileImageUrl, interestIds: ids) }
+                    updateUserInterests()
+                    onComplete?()
+                }
+            } catch {
+                await MainActor.run { onError?(error.localizedDescription) }
             }
         }
     }

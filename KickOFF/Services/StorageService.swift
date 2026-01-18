@@ -9,7 +9,7 @@ final class StorageService {
     
     func uploadProfileImage(_ image: UIImage, uid: String) async throws -> String {
         
-        guard let imageData = image.jpegData(compressionQuality: 0.5) else {
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             throw NSError(domain: "StorageService", code: 400, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image to data"])
         }
         
