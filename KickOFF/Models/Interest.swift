@@ -5,6 +5,12 @@ struct Interest: Identifiable {
     let title: String
     let imageUrl: String
     
+    init(id: String, title: String, imageUrl: String) {
+        self.id = id
+        self.title = title
+        self.imageUrl = imageUrl
+    }
+    
     init?(document: QueryDocumentSnapshot) {
         let data = document.data()
         

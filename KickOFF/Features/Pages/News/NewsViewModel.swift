@@ -11,10 +11,13 @@ class NewsViewModel: ObservableObject {
     private let interestService: InterestService
     private let authService: FirebaseAuthService
     
+    private static let allCategory = Interest(id: "all", title: "ყველა", imageUrl: "")
+    
     init(newsService: NewsService = NewsService(), interestService: InterestService = InterestService(), authService: FirebaseAuthService = .shared) {
         self.newsService = newsService
         self.interestService = interestService
         self.authService = authService
+        self.selectedCategory = Self.allCategory
         fetchUserInterests()
         fetchNews()
     }
@@ -26,19 +29,22 @@ class NewsViewModel: ObservableObject {
             do {
                 guard let user = try await self.authService.getCurrentUser() else {
                     await MainActor.run {
-                        self.categories = []
-                        self.selectedCategory = nil
+                        self.categories = [Self.allCategory]
+                        self.selectedCategory = Self.allCategory
                     }
                     return
                 }
                 
                 let interestIds = user.interestIds ?? []
                 
-                guard !interestIds.isEmpty else {
-                    await MainActor.run {
-                        self.categories = []
-                        self.selectedCategory = nil
+                await MainActor.run {
+                    if interestIds.isEmpty {
+                        self.categories = [Self.allCategory]
+                        self.selectedCategory = Self.allCategory
                     }
+                }
+                
+                guard !interestIds.isEmpty else {
                     return
                 }
                 
@@ -46,18 +52,23 @@ class NewsViewModel: ObservableObject {
                 let userInterests = allInterests.filter { interestIds.contains($0.id) }
                 
                 await MainActor.run {
-                    self.categories = userInterests
+                    let previousCategoryId = self.selectedCategory?.id
+                    self.categories = [Self.allCategory] + userInterests
                     if let currentSelectedId = self.selectedCategory?.id,
-                       !userInterests.contains(where: { $0.id == currentSelectedId }) {
-                        self.selectedCategory = userInterests.first
-                    } else if self.selectedCategory == nil, let firstCategory = userInterests.first {
-                        self.selectedCategory = firstCategory
+                       !self.categories.contains(where: { $0.id == currentSelectedId }) {
+                        self.selectedCategory = Self.allCategory
+                        if self.selectedCategory?.id != previousCategoryId {
+                            self.fetchNews()
+                        }
+                    } else if self.selectedCategory == nil {
+                        self.selectedCategory = Self.allCategory
+                        self.fetchNews()
                     }
                 }
             } catch {
                 await MainActor.run {
-                    self.categories = []
-                    self.selectedCategory = nil
+                    self.categories = [Self.allCategory]
+                    self.selectedCategory = Self.allCategory
                 }
             }
         }
@@ -67,18 +78,30 @@ class NewsViewModel: ObservableObject {
         isLoading = true
         
         Task { [weak self] in
-            let news = await self?.newsService.fetchNews() ?? []
+            let allNews = await self?.newsService.fetchNews() ?? []
             
-            await MainActor.run(body:  {
-                self?.news = news
-                self?.isLoading = false
-            })
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
+                
+                if let selectedCategory = self.selectedCategory {
+                    if selectedCategory.id == Self.allCategory.id {
+                        self.news = allNews
+                    } else {
+                        self.news = allNews.filter { news in
+                            news.category.contains(selectedCategory.title)
+                        }
+                    }
+                } else {
+                    self.news = allNews
+                }
+                
+                self.isLoading = false
+            }
         }
     }
     
     func selectCategory(_ category: Interest) {
         selectedCategory = category
-        // TODO: filter news based on selected category
         fetchNews()
     }
     
