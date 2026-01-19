@@ -4,11 +4,13 @@ struct HomeView: View {
     @StateObject var viewModel: HomeViewModel
     var onBestOfNewsTap: ((BestOfNews) -> Void)?
     var onNewsTap: ((News) -> Void)?
+    var onSeeAllTap: (() -> Void)?
     
-    init(viewModel: HomeViewModel = HomeViewModel(), onBestOfNewsTap: ((BestOfNews) -> Void)? = nil, onNewsTap: ((News) -> Void)? = nil) {
+    init(viewModel: HomeViewModel = HomeViewModel(), onBestOfNewsTap: ((BestOfNews) -> Void)? = nil, onNewsTap: ((News) -> Void)? = nil, onSeeAllTap: (() -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.onBestOfNewsTap = onBestOfNewsTap
         self.onNewsTap = onNewsTap
+        self.onSeeAllTap = onSeeAllTap
     }
     
     var body: some View {
@@ -72,14 +74,28 @@ struct HomeView: View {
                                 .foregroundStyle(.clear)
                                 .frame(height: 300)
                         } else {
-                            ForEach(viewModel.news) { news in
-                                NewsCardView(title: news.title, subtitle: news.subtitle, image: news.imageUrl, date: viewModel.timeAgo(from: news.date))
-                                    .onTapGesture {
-                                        onNewsTap?(news)
-                                    }
+                            VStack(spacing: 10) {
+                                ForEach(viewModel.news) { news in
+                                    NewsCardView(title: news.title, subtitle: news.subtitle, image: news.imageUrl, date: viewModel.timeAgo(from: news.date))
+                                        .onTapGesture {
+                                            onNewsTap?(news)
+                                        }
+                                }
                             }
                         }
+                        
+                        VStack(alignment: .center) {
+                            Button {
+                                onSeeAllTap?()
+                            } label: {
+                                Text("ნახე ყველა...")
+                                    .font(FontType.medium.swiftUIFont(size: 12))
+                                    .foregroundStyle(.customGreen)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
                     }
+                    
                     VStack(alignment: .leading, spacing: 12) {
                         
                         Text("ქვიზები")

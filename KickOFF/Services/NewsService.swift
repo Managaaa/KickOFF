@@ -22,11 +22,20 @@ final class NewsService {
     }
     
     
-    func fetchNews() async -> [News] {
+    func fetchNews(limit: Int? = nil) async -> [News] {
         await withCheckedContinuation { continuation in
-            db.collection("news")
-                .order(by: "date", descending: true)
-                .getDocuments { snapshot, error in
+            let query: Query = {
+                let baseQuery = db.collection("news")
+                    .order(by: "date", descending: true)
+                
+                if let limit = limit {
+                    return baseQuery.limit(to: limit)
+                } else {
+                    return baseQuery
+                }
+            }()
+            
+            query.getDocuments { snapshot, error in
                     
                     guard let documents = snapshot?.documents else {
                         continuation.resume(returning: [])

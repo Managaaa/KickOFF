@@ -36,6 +36,9 @@ final class MainTabCoordinator: Coordinator {
             },
             onNewsTap: { [weak self] news in
                 self?.showNewsDetails(news)
+            },
+            onSeeAllTap: { [weak self] in
+                self?.switchToNewsTab()
             }
         )
         let homeViewController = UIHostingController(rootView: homeView)
@@ -107,5 +110,9 @@ final class MainTabCoordinator: Coordinator {
         )
         let newsDetailViewController = UIHostingController(rootView: newsDetailView)
         navigationController.pushViewController(newsDetailViewController, animated: true)
+    }
+    
+    private func switchToNewsTab() {
+        tabBarController?.selectedIndex = AppTab.news.rawValue
     }
 }

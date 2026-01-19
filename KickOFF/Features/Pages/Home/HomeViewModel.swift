@@ -31,7 +31,7 @@ class HomeViewModel: ObservableObject {
         isLoading = true
         
         Task { [weak self] in
-            let news = await self?.newsService.fetchNews() ?? []
+            let news = await self?.newsService.fetchNews(limit: 10) ?? []
             
             await MainActor.run(body:  {
                 self?.news = news
