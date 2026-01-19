@@ -2,9 +2,11 @@ import SwiftUI
 
 struct NewsView: View {
     @StateObject var viewModel: NewsViewModel
+    var onNewsTap: ((News) -> Void)?
     
-    init(viewModel: NewsViewModel = NewsViewModel()) {
+    init(viewModel: NewsViewModel = NewsViewModel(), onNewsTap: ((News) -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: viewModel)
+        self.onNewsTap = onNewsTap
     }
     
     var body: some View {
@@ -54,6 +56,9 @@ struct NewsView: View {
                         } else {
                             ForEach(viewModel.news) { news in
                                 NewsCardView(title: news.title, subtitle: news.subtitle, image: news.imageUrl, date: viewModel.timeAgo(from: news.date))
+                                    .onTapGesture {
+                                        onNewsTap?(news)
+                                    }
                             }
                         }
                     }

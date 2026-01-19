@@ -42,7 +42,11 @@ final class MainTabCoordinator: Coordinator {
         homeViewController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "house"), tag: AppTab.home.rawValue)
         
         let newsViewModel = NewsViewModel()
-        let newsView = NewsView(viewModel: newsViewModel)
+        let newsView = NewsView(
+            viewModel: newsViewModel,
+            onNewsTap: { [weak self]  news in
+                self?.showNewsDetails(news)
+            })
         let newsViewController = UIHostingController(rootView: newsView)
         newsViewController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "newspaper"), tag: AppTab.news.rawValue)
         
