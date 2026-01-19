@@ -8,6 +8,8 @@ class InterestCell: UICollectionViewCell {
         image.contentMode = .scaleAspectFill
         image.layer.cornerRadius = 35
         image.clipsToBounds = true
+        image.layer.borderWidth = 2
+        image.layer.borderColor = UIColor.customGreen.cgColor
         image.translatesAutoresizingMaskIntoConstraints = false
         return image
     }()

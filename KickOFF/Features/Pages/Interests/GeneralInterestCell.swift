@@ -78,6 +78,14 @@ class GeneralInterestCell: UICollectionViewCell {
         let imageName = isSelected ? "minusbutton" : "plusbutton"
         plusButton.setImage(UIImage(named: imageName), for: .normal)
         
+        if isSelected {
+            interestCircleView.layer.borderWidth = 2
+            interestCircleView.layer.borderColor = UIColor.customGreen.cgColor
+        } else {
+            interestCircleView.layer.borderWidth = 0
+            interestCircleView.layer.borderColor = nil
+        }
+        
         interestCircleView.loadInterestImage(from: interest.imageUrl, size: 70, placeholder: UIImage(named: "circle"))
     }
     
@@ -86,6 +94,8 @@ class GeneralInterestCell: UICollectionViewCell {
         onToggleSelection = nil
         interestCircleView.kf.cancelDownloadTask()
         interestCircleView.image = nil
+        interestCircleView.layer.borderWidth = 0
+        interestCircleView.layer.borderColor = nil
     }
     
 }
