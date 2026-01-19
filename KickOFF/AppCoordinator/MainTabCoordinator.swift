@@ -94,7 +94,12 @@ final class MainTabCoordinator: Coordinator {
     }
     
     private func showNewsDetails(_ news: News) {
-        let newsDetailView = NewsDetailView(news: news)
+        let newsDetailView = NewsDetailView(
+            news: news,
+            onNewsTap: { [weak self] news in
+                self?.showNewsDetails(news)
+            }
+        )
         let newsDetailViewController = UIHostingController(rootView: newsDetailView)
         navigationController.pushViewController(newsDetailViewController, animated: true)
     }
