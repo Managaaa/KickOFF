@@ -2,6 +2,20 @@ import SwiftUI
 
 struct BestOfNewsDetailView: View {
     let news: BestOfNews
+    var onBestOfNewsTap: ((BestOfNews) -> Void)?
+    @StateObject var viewModel: HomeViewModel
+    
+    init(viewModel: HomeViewModel = HomeViewModel(), news: BestOfNews, onBestOfNewsTap: ((BestOfNews) -> Void)? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+        self.news = news
+        self.onBestOfNewsTap = onBestOfNewsTap
+    }
+    
+    var recomendationNews: [BestOfNews] {
+        viewModel.bestOfNews.filter { newsItem in
+            newsItem.id != news.id
+        }
+    }
     
     var body: some View {
         ZStack {
@@ -42,6 +56,19 @@ struct BestOfNewsDetailView: View {
                             Text(news.text)
                                 .font(FontType.regular.swiftUIFont(size: 14))
                                 .foregroundStyle(.white)
+                            
+                            VStack(alignment: .leading, spacing: 20) {
+                                Text("რეკომენდაციები")
+                                    .font(FontType.black.swiftUIFont(size: 20))
+                                    .foregroundStyle(.white)
+                                
+                                ForEach(recomendationNews) { bestOfNews in
+                                    BestOfsCardView(title: bestOfNews.title, subtitle: bestOfNews.subtitle, image: bestOfNews.imageUrl)
+                                        .onTapGesture {
+                                            onBestOfNewsTap?(bestOfNews)
+                                        }
+                                }
+                            }
                         }
                     }
                     .padding(.horizontal, 16)

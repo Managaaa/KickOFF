@@ -88,7 +88,12 @@ final class MainTabCoordinator: Coordinator {
     }
     
     private func showBestOfNewsDetails(_ news: BestOfNews) {
-        let bestOfNewsDetailView = BestOfNewsDetailView(news: news)
+        let bestOfNewsDetailView = BestOfNewsDetailView(
+            news: news,
+            onBestOfNewsTap: { [weak self] news in
+                self?.showBestOfNewsDetails(news)
+            }
+        )
         let bestOfNewsDetailViewController = UIHostingController(rootView: bestOfNewsDetailView)
         navigationController.pushViewController(bestOfNewsDetailViewController, animated: true)
     }
