@@ -8,6 +8,7 @@ class ProfileViewController: UIViewController {
     var onLogout: (() -> Void)?
     var onShowInterests: (() -> Void)?
     var onSettings: (() -> Void)?
+    var onShowFavorites: (() -> Void)?
     
     var currentUser: User? {
         return viewModel.currentUser
@@ -105,6 +106,7 @@ class ProfileViewController: UIViewController {
     }()
     
     private var reusableButtonHostingController: UIHostingController<ReusableMainButton>?
+    private var menuListHostingController: UIHostingController<ProfileMenuListView>?
     
     //MARK: - Lifecycle
     override func viewDidLoad() {
@@ -127,6 +129,7 @@ class ProfileViewController: UIViewController {
         configureCover()
         configureInterestTitleLabel()
         configureInterestCollectionView()
+        configureMenuListView()
     }
     
     private func configurePageTitleLabel() {
@@ -202,6 +205,34 @@ class ProfileViewController: UIViewController {
             interestCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             interestCollectionView.topAnchor.constraint(equalTo: addInterestButton.topAnchor),
             interestCollectionView.heightAnchor.constraint(equalToConstant: 70),
+        ])
+    }
+    
+    private func configureMenuListView() {
+        let menuListView = ProfileMenuListView(
+            onFavoritesTap: { [weak self] in
+                self?.onShowFavorites?()
+            },
+            onSubscribedTap: { [weak self] in
+
+            }
+        )
+        
+        let hostingController = UIHostingController(rootView: menuListView)
+        hostingController.view.backgroundColor = .clear
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.didMove(toParent: self)
+        
+        self.menuListHostingController = hostingController
+        
+        NSLayoutConstraint.activate([
+            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            hostingController.view.topAnchor.constraint(equalTo: interestCollectionView.bottomAnchor, constant: 50),
+            hostingController.view.heightAnchor.constraint(equalToConstant: 100)
         ])
     }
     

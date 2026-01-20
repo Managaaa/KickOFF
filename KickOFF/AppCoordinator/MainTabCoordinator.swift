@@ -68,6 +68,9 @@ final class MainTabCoordinator: Coordinator {
         profileViewController.onSettings = { [weak self, weak profileViewController] in
             self?.showSettings(from: profileViewController)
         }
+        profileViewController.onShowFavorites = { [weak self] in
+            self?.showFavorites()
+        }
         
         tabBarController.viewControllers = [homeViewController, newsViewController, searchViewController, articleViewController, profileViewController,]
         navigationController.setViewControllers([tabBarController], animated: true)
@@ -114,5 +117,15 @@ final class MainTabCoordinator: Coordinator {
     
     private func switchToNewsTab() {
         tabBarController?.selectedIndex = AppTab.news.rawValue
+    }
+    
+    private func showFavorites() {
+        let favoritesView = FavoritesView(
+            onNewsTap: { [weak self] news in
+                self?.showNewsDetails(news)
+            }
+        )
+        let favoritesViewController = UIHostingController(rootView: favoritesView)
+        navigationController.pushViewController(favoritesViewController, animated: true)
     }
 }
