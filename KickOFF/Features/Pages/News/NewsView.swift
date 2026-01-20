@@ -55,10 +55,19 @@ struct NewsView: View {
                                 .frame(height: 300)
                         } else {
                             ForEach(viewModel.news) { news in
-                                NewsCardView(title: news.title, subtitle: news.subtitle, image: news.imageUrl, date: viewModel.timeAgo(from: news.date))
-                                    .onTapGesture {
-                                        onNewsTap?(news)
+                                NewsCardView(
+                                    title: news.title,
+                                    subtitle: news.subtitle,
+                                    image: news.imageUrl,
+                                    date: viewModel.timeAgo(from: news.date),
+                                    isFavorite: viewModel.isFavorite(news),
+                                    onFavoriteTap: {
+                                        viewModel.toggleFavoriteNews(news)
                                     }
+                                )
+                                .onTapGesture {
+                                    onNewsTap?(news)
+                                }
                             }
                         }
                     }

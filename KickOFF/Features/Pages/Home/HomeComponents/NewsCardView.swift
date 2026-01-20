@@ -5,6 +5,18 @@ struct NewsCardView: View {
     let subtitle: String
     let image: String
     let date: String
+    let isFavorite: Bool
+    let onFavoriteTap: () -> Void
+    
+    init(title: String, subtitle: String, image: String, date: String, isFavorite: Bool = false, onFavoriteTap: @escaping () -> Void = {}) {
+        self.title = title
+        self.subtitle = subtitle
+        self.image = image
+        self.date = date
+        self.isFavorite = isFavorite
+        self.onFavoriteTap = onFavoriteTap
+    }
+    
     var body: some View {
         ZStack {
             Color.customGray
@@ -45,9 +57,9 @@ struct NewsCardView: View {
                 Spacer()
                 
                 Button {
-                    
+                    onFavoriteTap()
                 } label: {
-                    Image("favorite")
+                    Image(isFavorite ? "selectedfavorite" : "favorite")
                         .resizable()
                         .frame(width: 20, height: 20)
                 }

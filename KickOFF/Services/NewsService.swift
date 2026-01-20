@@ -1,8 +1,10 @@
 import FirebaseFirestore
+import FirebaseAuth
 
 final class NewsService {
     
     private let db = Firestore.firestore()
+    private let auth = Auth.auth()
     
     func fetchBestOfNews() async -> [BestOfNews] {
         await withCheckedContinuation { continuation in
@@ -46,5 +48,35 @@ final class NewsService {
                     continuation.resume(returning: news)
                 }
         }
+    }
+    
+    func addFavoriteNews(newsId: String) async throws {
+        guard let uid = auth.currentUser?.uid else {
+            throw NSError(domain: "NewsService", code: 401,
+                          userInfo: [NSLocalizedDescriptionKey: "User not authenticated"])
+        }
+        
+        let userRef = db.collection("users").document(uid)
+        let userDoc = try await userRef.getDocument()
+        
+        var favoriteNews = (userDoc.data()?["favoriteNews"] as? [String]) ?? []
+        if !favoriteNews.contains(newsId) {
+            favoriteNews.append(newsId)
+            try await userRef.updateData(["favoriteNews": favoriteNews])
+        }
+    }
+    
+    func removeFavoriteNews(newsId: String) async throws {
+        guard let uid = auth.currentUser?.uid else {
+            throw NSError(domain: "NewsService", code: 401,
+                          userInfo: [NSLocalizedDescriptionKey: "User not authenticated"])
+        }
+        
+        let userRef = db.collection("users").document(uid)
+        let userDoc = try await userRef.getDocument()
+        
+        var favoriteNews = (userDoc.data()?["favoriteNews"] as? [String]) ?? []
+        favoriteNews.removeAll { $0 == newsId }
+        try await userRef.updateData(["favoriteNews": favoriteNews])
     }
 }

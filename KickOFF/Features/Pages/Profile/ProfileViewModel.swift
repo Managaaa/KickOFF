@@ -132,7 +132,8 @@ class ProfileViewModel {
                         email: email ?? user.email,
                         createdAt: user.createdAt,
                         profileImageUrl: imageUrl,
-                        interestIds: user.interestIds
+                        interestIds: user.interestIds,
+                        favoriteNews: user.favoriteNews
                     )
                 }
                 
@@ -161,7 +162,8 @@ class ProfileViewModel {
                         email: email,
                         createdAt: user.createdAt,
                         profileImageUrl: user.profileImageUrl,
-                        interestIds: user.interestIds
+                        interestIds: user.interestIds,
+                        favoriteNews: user.favoriteNews
                     )
                 }
                 
@@ -213,7 +215,7 @@ class ProfileViewModel {
                     var ids = currentUser?.interestIds ?? []
                     if !ids.contains(interest.id) { ids.append(interest.id)
                     }
-                    currentUser = currentUser.flatMap { User(id: $0.id, name: $0.name, email: $0.email, createdAt: $0.createdAt, profileImageUrl: $0.profileImageUrl, interestIds: ids)}
+                    currentUser = currentUser.flatMap { User(id: $0.id, name: $0.name, email: $0.email, createdAt: $0.createdAt, profileImageUrl: $0.profileImageUrl, interestIds: ids, favoriteNews: $0.favoriteNews)}
                     updateUserInterests()
                     onComplete?()
                 }
@@ -235,7 +237,7 @@ class ProfileViewModel {
                 try await interestService.removeUserInterest(uid: uid, interestId: interest.id)
                 await MainActor.run {
                     let ids = (currentUser?.interestIds ?? []).filter { $0 != interest.id }
-                    currentUser = currentUser.flatMap { User(id: $0.id, name: $0.name, email: $0.email, createdAt: $0.createdAt, profileImageUrl: $0.profileImageUrl, interestIds: ids) }
+                    currentUser = currentUser.flatMap { User(id: $0.id, name: $0.name, email: $0.email, createdAt: $0.createdAt, profileImageUrl: $0.profileImageUrl, interestIds: ids, favoriteNews: $0.favoriteNews) }
                     updateUserInterests()
                     onComplete?()
                 }

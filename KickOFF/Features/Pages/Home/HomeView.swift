@@ -75,11 +75,20 @@ struct HomeView: View {
                                 .frame(height: 300)
                         } else {
                             VStack(spacing: 10) {
-                                ForEach(viewModel.news) { news in
-                                    NewsCardView(title: news.title, subtitle: news.subtitle, image: news.imageUrl, date: viewModel.timeAgo(from: news.date))
-                                        .onTapGesture {
-                                            onNewsTap?(news)
+                                ForEach(viewModel.displayedNews) { news in
+                                    NewsCardView(
+                                        title: news.title,
+                                        subtitle: news.subtitle,
+                                        image: news.imageUrl,
+                                        date: viewModel.timeAgo(from: news.date),
+                                        isFavorite: viewModel.isFavorite(news),
+                                        onFavoriteTap: {
+                                            viewModel.toggleFavoriteNews(news)
                                         }
+                                    )
+                                    .onTapGesture {
+                                        onNewsTap?(news)
+                                    }
                                 }
                             }
                         }

@@ -6,10 +6,12 @@ class NewsViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var categories: [Interest] = []
     @Published var selectedCategory: Interest?
+    @Published var favoriteNewsIds: Set<String> = []
     
     private let newsService: NewsService
     private let interestService: InterestService
     private let authService: FirebaseAuthService
+    private var cancellables = Set<AnyCancellable>()
     
     private static let allCategory = Interest(id: "all", title: "ყველა", imageUrl: "")
     
@@ -20,6 +22,33 @@ class NewsViewModel: ObservableObject {
         self.selectedCategory = Self.allCategory
         fetchUserInterests()
         fetchNews()
+        loadFavoriteNews()
+        setupFavoriteNewsObserver()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    private func setupFavoriteNewsObserver() {
+        NotificationCenter.default.publisher(for: .favoriteNewsChanged)
+            .compactMap { notification -> (newsId: String, isFavorite: Bool)? in
+                guard let userInfo = notification.userInfo,
+                      let newsId = userInfo["newsId"] as? String,
+                      let isFavorite = userInfo["isFavorite"] as? Bool else {
+                    return nil
+                }
+                return (newsId, isFavorite)
+            }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newsId, isFavorite in
+                if isFavorite {
+                    self?.favoriteNewsIds.insert(newsId)
+                } else {
+                    self?.favoriteNewsIds.remove(newsId)
+                }
+            }
+            .store(in: &cancellables)
     }
     
     func fetchUserInterests() {
@@ -123,4 +152,52 @@ class NewsViewModel: ObservableObject {
         }
     }
     
+    func loadFavoriteNews() {
+        Task {
+            do {
+                if let user = try await authService.getCurrentUser() {
+                    _ = await MainActor.run {
+                        favoriteNewsIds = Set(user.favoriteNews ?? [])
+                    }
+                }
+            } catch {
+
+            }
+        }
+    }
+    
+    func toggleFavoriteNews(_ news: News) {
+        Task {
+            do {
+                let isFavorite = favoriteNewsIds.contains(news.id)
+                let newState = !isFavorite
+                
+                if isFavorite {
+                    try await newsService.removeFavoriteNews(newsId: news.id)
+                } else {
+                    try await newsService.addFavoriteNews(newsId: news.id)
+                }
+                
+                _ = await MainActor.run {
+                    if newState {
+                        favoriteNewsIds.insert(news.id)
+                    } else {
+                        favoriteNewsIds.remove(news.id)
+                    }
+                    
+                    NotificationCenter.default.post(
+                        name: .favoriteNewsChanged,
+                        object: nil,
+                        userInfo: ["newsId": news.id, "isFavorite": newState]
+                    )
+                }
+            } catch {
+
+            }
+        }
+    }
+    
+    func isFavorite(_ news: News) -> Bool {
+        favoriteNewsIds.contains(news.id)
+    }
 }
