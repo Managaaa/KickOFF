@@ -59,7 +59,12 @@ final class MainTabCoordinator: Coordinator {
         let searchViewController = UIViewController()
         searchViewController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "magnifyingglass"), tag: AppTab.search.rawValue)
         
-        let articleViewController = UIViewController()
+        let articlesView = ArticlesView(
+            onWriteTap: { [weak self] in
+                self?.showArticleWrite()
+            }
+        )
+        let articleViewController = UIHostingController(rootView: articlesView)
         articleViewController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "pencil.line"), tag: AppTab.article.rawValue)
         
         let profileViewController = ProfileViewController()
@@ -152,5 +157,13 @@ final class MainTabCoordinator: Coordinator {
         })
         let quizDetailsViewController = UIHostingController(rootView: quizDetailsView)
         navigationController.pushViewController(quizDetailsViewController, animated: true)
+    }
+
+    private func showArticleWrite() {
+        let articleWriteView = ArticleWriteView(onFinish: { [weak self] in
+            self?.navigationController.popViewController(animated: true)
+        })
+        let articleWriteViewController = UIHostingController(rootView: articleWriteView)
+        navigationController.pushViewController(articleWriteViewController, animated: true)
     }
 }
