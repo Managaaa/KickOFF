@@ -6,6 +6,9 @@ final class ArticleViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var body: String = ""
 
+    @Published var articles: [Article] = []
+    @Published var isLoading: Bool = false
+
     @Published var alertTitle: String = "შეცდომა"
     @Published var alertMessage: String? = nil
     @Published var isAlertPresented: Bool = false
@@ -23,6 +26,43 @@ final class ArticleViewModel: ObservableObject {
     ) {
         self.authService = authService
         self.articleService = articleService
+    }
+
+    func fetchArticles() {
+        isLoading = true
+
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                let fetched = try await articleService.fetchArticles()
+                await MainActor.run {
+                    self.articles = fetched
+                    self.isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    self.isLoading = false
+                }
+            }
+        }
+    }
+
+    func timeAgo(from date: Date) -> String {
+        let seconds = Int(Date().timeIntervalSince(date))
+
+        let minute = 60
+        let hour = 3600
+        let day = 86400
+
+        if seconds < minute {
+            return "ახლახანს"
+        } else if seconds < hour {
+            return "\(seconds / minute) წუთის წინ"
+        } else if seconds < day {
+            return "\(seconds / hour) საათის წინ"
+        } else {
+            return "\(seconds / day) დღის წინ"
+        }
     }
 
     @MainActor

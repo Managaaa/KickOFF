@@ -28,5 +28,14 @@ final class ArticleService {
 
         return docRef.documentID
     }
+
+    func fetchArticles() async throws -> [Article] {
+        let snapshot = try await db
+            .collection("articles")
+            .order(by: "timestamp", descending: true)
+            .getDocuments()
+
+        return snapshot.documents.compactMap { Article(document: $0) }
+    }
 }
 
