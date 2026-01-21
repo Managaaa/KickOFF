@@ -37,6 +37,9 @@ final class MainTabCoordinator: Coordinator {
             onNewsTap: { [weak self] news in
                 self?.showNewsDetails(news)
             },
+            onQuizTap: { [weak self] quiz in
+                self?.showQuizDetails(quiz)
+            },
             onSeeAllTap: { [weak self] in
                 self?.switchToNewsTab()
             }
@@ -127,5 +130,27 @@ final class MainTabCoordinator: Coordinator {
         )
         let favoritesViewController = UIHostingController(rootView: favoritesView)
         navigationController.pushViewController(favoritesViewController, animated: true)
+    }
+    
+    private func showQuizDetails(_ quiz: Quiz) {
+        let quizView = QuizView(
+            quiz: quiz,
+            onQuizTap: { [weak self] quiz in
+                self?.showQuizDetails(quiz)
+            },
+            onStartQuiz: { [weak self] quiz in
+                self?.showQuizDetailsView(quiz)
+            }
+        )
+        let quizViewController = UIHostingController(rootView: quizView)
+        navigationController.pushViewController(quizViewController, animated: true)
+    }
+    
+    private func showQuizDetailsView(_ quiz: Quiz) {
+        let quizDetailsView = QuizDetailsView(quiz: quiz, onFinish: { [weak self] in
+            self?.navigationController.popViewController(animated: true)
+        })
+        let quizDetailsViewController = UIHostingController(rootView: quizDetailsView)
+        navigationController.pushViewController(quizDetailsViewController, animated: true)
     }
 }

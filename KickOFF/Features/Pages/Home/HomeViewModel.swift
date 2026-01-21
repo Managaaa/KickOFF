@@ -8,18 +8,22 @@ extension Notification.Name {
 class HomeViewModel: ObservableObject {
     @Published var bestOfNews: [BestOfNews] = []
     @Published var news: [News] = []
+    @Published var quizzes: [Quiz] = []
     @Published var isLoading: Bool = false
     @Published var favoriteNewsIds: Set<String> = []
     
     private let newsService: NewsService
+    private let quizService: QuizService
     private let authService: FirebaseAuthService
     private var cancellables = Set<AnyCancellable>()
     
-    init(newsService: NewsService = NewsService(), authService: FirebaseAuthService = .shared) {
+    init(newsService: NewsService = NewsService(), quizService: QuizService = QuizService(), authService: FirebaseAuthService = .shared) {
         self.newsService = newsService
+        self.quizService = quizService
         self.authService = authService
         fetchBestOfNews()
         fetchNews()
+        fetchQuizzes()
         loadFavoriteNews()
         setupFavoriteNewsObserver()
     }
@@ -75,8 +79,21 @@ class HomeViewModel: ObservableObject {
         }
     }
     
+    func fetchQuizzes() {
+        isLoading = true
+        
+        Task { [weak self] in
+            let quizzes = await self?.quizService.fetchQuizzes() ?? []
+            
+            await MainActor.run {
+                self?.quizzes = quizzes
+                self?.isLoading = false
+            }
+        }
+    }
+    
     var displayedNews: [News] {
-        Array(news.prefix(10))
+        Array(news.prefix(4))
     }
     
     func timeAgo(from date: Date) -> String {

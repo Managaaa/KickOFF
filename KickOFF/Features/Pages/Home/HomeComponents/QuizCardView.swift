@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct QuizCardView: View {
+    let quiz: Quiz
+    
     var body: some View {
         ZStack(alignment: .topLeading) {
             Color.customGray
@@ -8,15 +10,15 @@ struct QuizCardView: View {
                 .cornerRadius(12)
             VStack(alignment: .leading, spacing: 12) {
                 
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(.white)
+                KingfisherImageLoader.news(imageUrl: quiz.imageUrl, width: nil, height: 180, cornerRadius: 10, placeholder: Image(systemName: "photo"))
                     .frame(height: 180)
+                    .clipped()
                 
                 Text("ქვიზი")
                     .font(FontType.medium.swiftUIFont(size: 14))
                     .foregroundColor(.customGreen)
                 
-                Text("როგორ იცნობ შენს საყვარელ სპორტმენსა")
+                Text(quiz.title)
                     .font(FontType.medium.swiftUIFont(size: 16))
                     .foregroundColor(.white)
             }

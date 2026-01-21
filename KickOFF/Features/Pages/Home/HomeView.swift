@@ -4,12 +4,14 @@ struct HomeView: View {
     @StateObject var viewModel: HomeViewModel
     var onBestOfNewsTap: ((BestOfNews) -> Void)?
     var onNewsTap: ((News) -> Void)?
+    var onQuizTap: ((Quiz) -> Void)?
     var onSeeAllTap: (() -> Void)?
     
-    init(viewModel: HomeViewModel = HomeViewModel(), onBestOfNewsTap: ((BestOfNews) -> Void)? = nil, onNewsTap: ((News) -> Void)? = nil, onSeeAllTap: (() -> Void)? = nil) {
+    init(viewModel: HomeViewModel = HomeViewModel(), onBestOfNewsTap: ((BestOfNews) -> Void)? = nil, onNewsTap: ((News) -> Void)? = nil, onQuizTap: ((Quiz) -> Void)? = nil, onSeeAllTap: (() -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.onBestOfNewsTap = onBestOfNewsTap
         self.onNewsTap = onNewsTap
+        self.onQuizTap = onQuizTap
         self.onSeeAllTap = onSeeAllTap
     }
     
@@ -115,7 +117,29 @@ struct HomeView: View {
                             .foregroundStyle(.white.opacity(0.8))
                             .font(FontType.medium.swiftUIFont(size: 12))
                         
-                        QuizCardView()
+                        if viewModel.isLoading {
+                            Rectangle()
+                                .foregroundStyle(.clear)
+                                .frame(height: 300)
+                        } else {
+                            GeometryReader { geometry in
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 12) {
+                                        ForEach(viewModel.quizzes) { quiz in
+                                            QuizCardView(quiz: quiz)
+                                                .frame(width: geometry.size.width)
+                                                .onTapGesture {
+                                                    onQuizTap?(quiz)
+                                                }
+                                        }
+                                    }
+                                    .scrollTargetLayout()
+                                }
+                                .scrollTargetBehavior(.viewAligned)
+                                .scrollClipDisabled()
+                            }
+                            .frame(height: 300)
+                        }
                     }
                 }
                 .padding(.horizontal, 16)

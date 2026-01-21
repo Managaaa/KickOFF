@@ -214,7 +214,7 @@ class ProfileViewController: UIViewController {
                 self?.onShowFavorites?()
             },
             onSubscribedTap: { [weak self] in
-
+                //TODO: - subscribed authors redirection
             }
         )
         
