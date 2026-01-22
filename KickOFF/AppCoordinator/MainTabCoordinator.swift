@@ -95,6 +95,9 @@ final class MainTabCoordinator: Coordinator {
         profileViewController.onShowMyArticles = { [weak self] in
             self?.showMyArticles()
         }
+        profileViewController.onShowSubscribedAuthors = { [weak self] in
+            self?.showSubscribedAuthors()
+        }
         
         tabBarController.viewControllers = [homeViewController, newsViewController, searchViewController, articleViewController, profileViewController,]
         
@@ -214,5 +217,11 @@ final class MainTabCoordinator: Coordinator {
         )
         let myArticlesViewController = UIHostingController(rootView: myArticlesView)
         navigationController.pushViewController(myArticlesViewController, animated: true)
+    }
+    
+    private func showSubscribedAuthors() {
+        let subscribedAuthorsView = SubscribedAuthorsView()
+        let subscribedAuthorsViewController = UIHostingController(rootView: subscribedAuthorsView)
+        navigationController.pushViewController(subscribedAuthorsViewController, animated: true)
     }
 }

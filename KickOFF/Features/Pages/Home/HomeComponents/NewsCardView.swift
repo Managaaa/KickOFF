@@ -36,7 +36,7 @@ struct NewsCardView: View {
                     Text(subtitle)
                         .font(FontType.medium.swiftUIFont(size: 13))
                         .foregroundStyle(.white)
-                        .lineLimit(4)
+                        .lineLimit(3)
                 }
                 
                 Spacer()
