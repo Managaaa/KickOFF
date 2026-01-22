@@ -31,12 +31,12 @@ struct MenuItemRow: View {
         Button(action: action) {
             HStack(spacing: 16) {
                 Image(systemName: icon)
-                    .font(.system(size: 16))
+                    .font(.system(size: 14))
                     .foregroundStyle(.white)
                     .frame(width: 20)
                 
                 Text(title)
-                    .font(FontType.medium.swiftUIFont(size: 16))
+                    .font(FontType.medium.swiftUIFont(size: 14))
                     .foregroundStyle(.white)
                 
                 Spacer()
@@ -55,10 +55,4 @@ struct MenuItemRow: View {
                 .frame(height: 1)
         }
     }
-}
-
-#Preview {
-    ProfileMenuListView()
-        .padding()
-        .background(Color.customBackground)
 }

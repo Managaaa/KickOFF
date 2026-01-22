@@ -5,17 +5,29 @@ struct ArticleCardView: View {
     let authorProfileImageUrl: String?
     let title: String
     let date: String
+    let article: Article
+    let onLikeTap: () -> Void
+    let likes: Int
+    let isLiked: Bool
 
     init(
         authorName: String,
         authorProfileImageUrl: String? = nil,
         title: String,
-        date: String
+        date: String,
+        article: Article,
+        likes: Int,
+        isLiked: Bool,
+        onLikeTap: @escaping () -> Void
     ) {
         self.authorName = authorName
         self.authorProfileImageUrl = authorProfileImageUrl
         self.title = title
         self.date = date
+        self.article = article
+        self.likes = likes
+        self.isLiked = isLiked
+        self.onLikeTap = onLikeTap
     }
 
     var body: some View {
@@ -27,7 +39,7 @@ struct ArticleCardView: View {
                 HStack(spacing: 10) {
                     KingfisherImageLoader.profilePicture(
                         imageUrl: authorProfileImageUrl,
-                        size: 28,
+                        size: 30,
                         placeholder: Image("pfp")
                     )
 
@@ -45,14 +57,20 @@ struct ArticleCardView: View {
 
                 Text(date)
                     .font(FontType.light.swiftUIFont(size: 10))
-                    .foregroundStyle(.white.opacity(0.9))
+                    .foregroundStyle(.white.opacity(0.7))
                 
-                Button {
-                    //TODO: - article like actin
-                } label: {
-                    Image(.heart)
-                        .resizable()
-                        .frame(width: 18, height: 18)
+                HStack(spacing: 8) {
+                    Button {
+                        onLikeTap()
+                    } label: {
+                        Image(isLiked ? .tappedHeart : .heart)
+                            .resizable()
+                            .frame(width: 18, height: 18)
+                    }
+                    
+                    Text("\(likes)")
+                        .font(FontType.medium.swiftUIFont(size: 10))
+                        .foregroundStyle(.white)
                 }
             }
             .padding(.horizontal, 20)
@@ -60,7 +78,7 @@ struct ArticleCardView: View {
             .frame(maxWidth: .infinity, alignment: .topLeading)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 150)
+        .frame(height: 160)
     }
 }
 

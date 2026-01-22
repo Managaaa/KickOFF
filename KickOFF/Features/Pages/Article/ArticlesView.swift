@@ -29,7 +29,15 @@ struct ArticlesView: View {
                                     authorName: article.senderName,
                                     authorProfileImageUrl: article.profileImageUrl.isEmpty ? nil : article.profileImageUrl,
                                     title: article.title,
-                                    date: viewModel.timeAgo(from: article.timestamp)
+                                    date: viewModel.timeAgo(from: article.timestamp),
+                                    article: article,
+                                    likes: article.likes,
+                                    isLiked: viewModel.isArticleLiked(article),
+                                    onLikeTap: {
+                                        Task {
+                                            await viewModel.toggleLike(article)
+                                        }
+                                    }
                                 )
                             }
                         }

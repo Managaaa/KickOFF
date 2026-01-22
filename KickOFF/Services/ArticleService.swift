@@ -37,5 +37,45 @@ final class ArticleService {
 
         return snapshot.documents.compactMap { Article(document: $0) }
     }
+    
+    func likeArticle(articleId: String, userId: String) async throws {
+        let articleRef = db.collection("articles").document(articleId)
+        
+        let doc = try await articleRef.getDocument()
+        guard let data = doc.data(),
+              let likedBy = data["likedBy"] as? [String] else {
+            throw NSError(domain: "ArticleService", code: -1, 
+                         userInfo: [NSLocalizedDescriptionKey: "Failed to fetch article"])
+        }
+        
+        if likedBy.contains(userId) {
+            return
+        }
+        
+        try await articleRef.updateData([
+            "likedBy": FieldValue.arrayUnion([userId]),
+            "likes": FieldValue.increment(Int64(1))
+        ])
+    }
+    
+    func unlikeArticle(articleId: String, userId: String) async throws {
+        let articleRef = db.collection("articles").document(articleId)
+        
+        let doc = try await articleRef.getDocument()
+        guard let data = doc.data(),
+              let likedBy = data["likedBy"] as? [String] else {
+            throw NSError(domain: "ArticleService", code: -1, 
+                         userInfo: [NSLocalizedDescriptionKey: "Failed to fetch article"])
+        }
+        
+        if !likedBy.contains(userId) {
+            return
+        }
+        
+        try await articleRef.updateData([
+            "likedBy": FieldValue.arrayRemove([userId]),
+            "likes": FieldValue.increment(Int64(-1))
+        ])
+    }
 }
 

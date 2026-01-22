@@ -10,6 +10,28 @@ struct Article: Identifiable {
     let timestamp: Date
     let likes: Int
     let likedBy: [String]
+    
+    init(
+        id: String,
+        title: String,
+        text: String,
+        senderId: String,
+        senderName: String,
+        profileImageUrl: String,
+        timestamp: Date,
+        likes: Int,
+        likedBy: [String]
+    ) {
+        self.id = id
+        self.title = title
+        self.text = text
+        self.senderId = senderId
+        self.senderName = senderName
+        self.profileImageUrl = profileImageUrl
+        self.timestamp = timestamp
+        self.likes = likes
+        self.likedBy = likedBy
+    }
 
     init?(document: QueryDocumentSnapshot) {
         let data = document.data()
