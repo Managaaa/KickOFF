@@ -22,6 +22,10 @@ struct NewsCardView: View {
             Color.customGray
                 .frame(height: 190)
                 .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.customGreen, lineWidth: 0.5)
+                )
             
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 12) {

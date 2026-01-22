@@ -79,7 +79,7 @@ class GeneralInterestCell: UICollectionViewCell {
         plusButton.setImage(UIImage(named: imageName), for: .normal)
         
         if isSelected {
-            interestCircleView.layer.borderWidth = 2
+            interestCircleView.layer.borderWidth = 1
             interestCircleView.layer.borderColor = UIColor.customGreen.cgColor
         } else {
             interestCircleView.layer.borderWidth = 0

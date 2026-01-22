@@ -8,6 +8,10 @@ struct QuizCardView: View {
             Color.customGray
                 .frame(height: 300)
                 .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.customGreen, lineWidth: 0.5)
+                )
             VStack(alignment: .leading, spacing: 12) {
                 
                 KingfisherImageLoader.news(imageUrl: quiz.imageUrl, width: nil, height: 180, cornerRadius: 10, placeholder: Image(systemName: "photo"))
@@ -15,11 +19,11 @@ struct QuizCardView: View {
                     .clipped()
                 
                 Text("ქვიზი")
-                    .font(FontType.medium.swiftUIFont(size: 14))
+                    .font(FontType.medium.swiftUIFont(size: 12))
                     .foregroundColor(.customGreen)
                 
                 Text(quiz.title)
-                    .font(FontType.medium.swiftUIFont(size: 16))
+                    .font(FontType.medium.swiftUIFont(size: 14))
                     .foregroundColor(.white)
             }
             .padding(12)

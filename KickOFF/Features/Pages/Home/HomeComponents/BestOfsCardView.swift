@@ -9,6 +9,11 @@ struct BestOfsCardView: View {
             Color.customGray
                 .frame(height: 300)
                 .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.customGreen, lineWidth: 0.5)
+                )
+            
             VStack(alignment: .leading, spacing: 12) {
                 
                 KingfisherImageLoader.news(imageUrl: image, width: nil, height: 180, cornerRadius: 12, placeholder: Image(systemName: "photo"))

@@ -34,6 +34,10 @@ struct ArticleCardView: View {
         ZStack(alignment: .topLeading) {
             Color.customGray
                 .cornerRadius(10)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.customGreen, lineWidth: 0.5)
+                )
 
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 10) {
