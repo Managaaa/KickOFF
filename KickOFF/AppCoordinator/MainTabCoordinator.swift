@@ -62,6 +62,9 @@ final class MainTabCoordinator: Coordinator {
         let articlesView = ArticlesView(
             onWriteTap: { [weak self] in
                 self?.showArticleWrite()
+            },
+            onArticleCardTap: { [weak self] article in
+                self?.showArticleDetails(article)
             }
         )
         let articleViewController = UIHostingController(rootView: articlesView)
@@ -158,12 +161,18 @@ final class MainTabCoordinator: Coordinator {
         let quizDetailsViewController = UIHostingController(rootView: quizDetailsView)
         navigationController.pushViewController(quizDetailsViewController, animated: true)
     }
-
+    
     private func showArticleWrite() {
         let articleWriteView = ArticleWriteView(onFinish: { [weak self] in
             self?.navigationController.popViewController(animated: true)
         })
         let articleWriteViewController = UIHostingController(rootView: articleWriteView)
         navigationController.pushViewController(articleWriteViewController, animated: true)
+    }
+    
+    private func showArticleDetails(_ article: Article) {
+        let articleDetailsView = ArticleDetailView(article: article)
+        let articleDetailViewController = UIHostingController(rootView: articleDetailsView)
+        navigationController.pushViewController(articleDetailViewController, animated: true)
     }
 }

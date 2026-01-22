@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ArticlesView: View {
     var onWriteTap: (() -> Void)?
+    var onArticleCardTap: ((Article) -> Void)?
     @StateObject private var viewModel = ArticleViewModel()
 
     var body: some View {
@@ -39,6 +40,9 @@ struct ArticlesView: View {
                                         }
                                     }
                                 )
+                                .onTapGesture {
+                                    onArticleCardTap?(article)
+                                }
                             }
                         }
                     }
