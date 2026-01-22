@@ -17,19 +17,19 @@ struct ArticleDetailView: View {
                     
                     HStack(spacing: 5) {
                         Text(viewModel.timeAgo(from: article.timestamp))
-                            .font(FontType.light.swiftUIFont(size: 10))
+                            .font(FontType.light.swiftUIFont(size: 12))
                             .foregroundStyle(.white.opacity(0.8))
                         
                         Text("~")
-                            .font(FontType.light.swiftUIFont(size: 10))
+                            .font(FontType.light.swiftUIFont(size: 12))
                             .foregroundStyle(.white.opacity(0.8))
                         
                         Image(.heart)
                             .resizable()
-                            .frame(width: 10, height: 10)
+                            .frame(width: 12, height: 12)
                         
                         Text("\(article.likes) მოწონება")
-                            .font(FontType.light.swiftUIFont(size: 10))
+                            .font(FontType.light.swiftUIFont(size: 12))
                             .foregroundStyle(.white.opacity(0.8))
                     }
                     

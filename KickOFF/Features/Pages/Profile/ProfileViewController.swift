@@ -9,6 +9,7 @@ class ProfileViewController: UIViewController {
     var onShowInterests: (() -> Void)?
     var onSettings: (() -> Void)?
     var onShowFavorites: (() -> Void)?
+    var onShowMyArticles: (() -> Void)?
     
     var currentUser: User? {
         return viewModel.currentUser
@@ -215,6 +216,9 @@ class ProfileViewController: UIViewController {
             },
             onSubscribedTap: { [weak self] in
                 //TODO: - subscribed authors redirection
+            },
+            onMyArticlesTap: { [weak self] in
+                self?.onShowMyArticles?()
             }
         )
         

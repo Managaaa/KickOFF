@@ -38,6 +38,27 @@ final class ArticleService {
         return snapshot.documents.compactMap { Article(document: $0) }
     }
     
+    func fetchUserArticles(userId: String) async throws -> [Article] {
+        do {
+            let snapshot = try await db
+                .collection("articles")
+                .whereField("senderId", isEqualTo: userId)
+                .order(by: "timestamp", descending: true)
+                .getDocuments()
+
+            return snapshot.documents.compactMap { Article(document: $0) }
+        } catch {
+            print(error)
+            let snapshot = try await db
+                .collection("articles")
+                .whereField("senderId", isEqualTo: userId)
+                .getDocuments()
+            
+            let articles = snapshot.documents.compactMap { Article(document: $0) }
+            return articles.sorted { $0.timestamp > $1.timestamp }
+        }
+    }
+    
     func likeArticle(articleId: String, userId: String) async throws {
         let articleRef = db.collection("articles").document(articleId)
         

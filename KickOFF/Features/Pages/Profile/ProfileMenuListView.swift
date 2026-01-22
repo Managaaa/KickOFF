@@ -3,6 +3,7 @@ import SwiftUI
 struct ProfileMenuListView: View {
     var onFavoritesTap: (() -> Void)?
     var onSubscribedTap: (() -> Void)?
+    var onMyArticlesTap: (() -> Void)?
     
     var body: some View {
         VStack(spacing: 0) {
@@ -11,9 +12,13 @@ struct ProfileMenuListView: View {
                 onFavoritesTap?()
             }
             
-            MenuItemRow(icon: "bell", title: "გამოწერილი", isLast: true
+            MenuItemRow(icon: "bell", title: "გამოწერილი ავტორები", isLast: false
             ) {
                 onSubscribedTap?()
+            }
+            MenuItemRow(icon: "list.bullet", title: "ჩემი არტიკლები", isLast: true
+            ) {
+                onMyArticlesTap?()
             }
         }
         .background(Color.customGray)

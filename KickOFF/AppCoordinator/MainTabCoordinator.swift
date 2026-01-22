@@ -45,7 +45,9 @@ final class MainTabCoordinator: Coordinator {
             }
         )
         let homeViewController = UIHostingController(rootView: homeView)
-        homeViewController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "house"), tag: AppTab.home.rawValue)
+        let homeTabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
+        homeTabBarItem.tag = AppTab.home.rawValue
+        homeViewController.tabBarItem = homeTabBarItem
         
         let newsViewModel = NewsViewModel()
         let newsView = NewsView(
@@ -54,10 +56,14 @@ final class MainTabCoordinator: Coordinator {
                 self?.showNewsDetails(news)
             })
         let newsViewController = UIHostingController(rootView: newsView)
-        newsViewController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "newspaper"), tag: AppTab.news.rawValue)
+        let newsTabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "newspaper"), selectedImage: UIImage(systemName: "newspaper.fill"))
+        newsTabBarItem.tag = AppTab.news.rawValue
+        newsViewController.tabBarItem = newsTabBarItem
         
         let searchViewController = UIViewController()
-        searchViewController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "magnifyingglass"), tag: AppTab.search.rawValue)
+        let searchTabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "magnifyingglass"), selectedImage: UIImage(systemName: "magnifyingglass"))
+        searchTabBarItem.tag = AppTab.search.rawValue
+        searchViewController.tabBarItem = searchTabBarItem
         
         let articlesView = ArticlesView(
             onWriteTap: { [weak self] in
@@ -68,10 +74,14 @@ final class MainTabCoordinator: Coordinator {
             }
         )
         let articleViewController = UIHostingController(rootView: articlesView)
-        articleViewController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "pencil.line"), tag: AppTab.article.rawValue)
+        let articleTabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "pencil"), selectedImage: UIImage(systemName: "pencil.line"))
+        articleTabBarItem.tag = AppTab.article.rawValue
+        articleViewController.tabBarItem = articleTabBarItem
         
         let profileViewController = ProfileViewController()
-        profileViewController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "person"), tag: AppTab.profile.rawValue)
+        let profileTabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person.fill"))
+        profileTabBarItem.tag = AppTab.profile.rawValue
+        profileViewController.tabBarItem = profileTabBarItem
         profileViewController.onLogout = onLogout
         profileViewController.onShowInterests = { [weak self] in
             self?.showInterests()
@@ -82,8 +92,28 @@ final class MainTabCoordinator: Coordinator {
         profileViewController.onShowFavorites = { [weak self] in
             self?.showFavorites()
         }
+        profileViewController.onShowMyArticles = { [weak self] in
+            self?.showMyArticles()
+        }
         
         tabBarController.viewControllers = [homeViewController, newsViewController, searchViewController, articleViewController, profileViewController,]
+        
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.shadowColor = .clear
+        
+        let customGreen = UIColor(named: "customGreen") ?? UIColor.systemGreen
+        appearance.stackedLayoutAppearance.selected.iconColor = customGreen
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: customGreen]
+        
+        appearance.stackedLayoutAppearance.normal.iconColor = .gray
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.gray]
+        
+        tabBarController.tabBar.standardAppearance = appearance
+        if #available(iOS 15.0, *) {
+            tabBarController.tabBar.scrollEdgeAppearance = appearance
+        }
+        
         navigationController.setViewControllers([tabBarController], animated: true)
         
     }
@@ -174,5 +204,15 @@ final class MainTabCoordinator: Coordinator {
         let articleDetailsView = ArticleDetailView(article: article)
         let articleDetailViewController = UIHostingController(rootView: articleDetailsView)
         navigationController.pushViewController(articleDetailViewController, animated: true)
+    }
+    
+    private func showMyArticles() {
+        let myArticlesView = MyArticlesView(
+            onArticleCardTap: { [weak self] article in
+                self?.showArticleDetails(article)
+            }
+        )
+        let myArticlesViewController = UIHostingController(rootView: myArticlesView)
+        navigationController.pushViewController(myArticlesViewController, animated: true)
     }
 }

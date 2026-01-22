@@ -70,6 +70,41 @@ final class ArticleViewModel: ObservableObject {
             }
         }
     }
+    
+    func fetchUserArticles() {
+        isLoading = true
+
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                if self.currentUserId == nil {
+                    await self.loadCurrentUserId()
+                }
+                
+                let userId = self.currentUserId ?? Auth.auth().currentUser?.uid
+                
+                guard let userId = userId else {
+                    await MainActor.run {
+                        self.isLoading = false
+                        self.articles = []
+                    }
+                    return
+                }
+                
+                let fetched = try await articleService.fetchUserArticles(userId: userId)
+                await MainActor.run {
+                    self.articles = fetched
+                    self.isLoading = false
+                }
+            } catch {
+                print(error)
+                await MainActor.run {
+                    self.isLoading = false
+                    self.articles = []
+                }
+            }
+        }
+    }
 
     func timeAgo(from date: Date) -> String {
         let seconds = Int(Date().timeIntervalSince(date))
