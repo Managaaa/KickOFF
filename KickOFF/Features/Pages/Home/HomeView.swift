@@ -4,11 +4,11 @@ struct HomeView: View {
     @StateObject var viewModel: HomeViewModel
     @ObservedObject private var authorViewModel = AuthorViewModel.shared
     var onBestOfNewsTap: ((BestOfNews) -> Void)?
-    var onNewsTap: ((News) -> Void)?
+    var onNewsTap: ((News, HomeViewModel?) -> Void)?
     var onQuizTap: ((Quiz) -> Void)?
     var onSeeAllTap: (() -> Void)?
     
-    init(viewModel: HomeViewModel = HomeViewModel(), onBestOfNewsTap: ((BestOfNews) -> Void)? = nil, onNewsTap: ((News) -> Void)? = nil, onQuizTap: ((Quiz) -> Void)? = nil, onSeeAllTap: (() -> Void)? = nil) {
+    init(viewModel: HomeViewModel = HomeViewModel(), onBestOfNewsTap: ((BestOfNews) -> Void)? = nil, onNewsTap: ((News, HomeViewModel?) -> Void)? = nil, onQuizTap: ((Quiz) -> Void)? = nil, onSeeAllTap: (() -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.onBestOfNewsTap = onBestOfNewsTap
         self.onNewsTap = onNewsTap
@@ -90,7 +90,7 @@ struct HomeView: View {
                                         }
                                     )
                                     .onTapGesture {
-                                        onNewsTap?(news)
+                                        onNewsTap?(news, viewModel)
                                     }
                                 }
                             }

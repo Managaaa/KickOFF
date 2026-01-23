@@ -2,9 +2,9 @@ import SwiftUI
 
 struct FavoritesView: View {
     @StateObject private var viewModel = HomeViewModel()
-    var onNewsTap: ((News) -> Void)?
+    var onNewsTap: ((News, HomeViewModel?) -> Void)?
     
-    init(onNewsTap: ((News) -> Void)? = nil) {
+    init(onNewsTap: ((News, HomeViewModel?) -> Void)? = nil) {
         self.onNewsTap = onNewsTap
     }
     
@@ -49,7 +49,7 @@ struct FavoritesView: View {
                                     }
                                 )
                                 .onTapGesture {
-                                    onNewsTap?(news)
+                                    onNewsTap?(news, viewModel)
                                 }
                             }
                         }

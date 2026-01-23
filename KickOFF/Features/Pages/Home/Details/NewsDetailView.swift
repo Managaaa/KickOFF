@@ -2,10 +2,10 @@ import SwiftUI
 
 struct NewsDetailView: View {
     let news: News
-    var onNewsTap: ((News) -> Void)?
+    var onNewsTap: ((News, HomeViewModel?) -> Void)?
     @StateObject var viewModel: HomeViewModel
     
-    init(viewModel: HomeViewModel = HomeViewModel(), news: News, onNewsTap: ((News) -> Void)? = nil) {
+    init(viewModel: HomeViewModel = HomeViewModel(), news: News, onNewsTap: ((News, HomeViewModel?) -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.news = news
         self.onNewsTap = onNewsTap
@@ -45,9 +45,27 @@ struct NewsDetailView: View {
                         .frame(height: 240)
                         .clipped()
                         
-                        Text(viewModel.timeAgo(from: news.date))
-                            .font(FontType.light.swiftUIFont(size: 12))
-                            .foregroundStyle(.white)
+                        HStack {
+                            Text(viewModel.timeAgo(from: news.date))
+                                .font(FontType.light.swiftUIFont(size: 12))
+                                .foregroundStyle(.white)
+                            
+                            Spacer()
+                            
+                            Button {
+                                viewModel.toggleFavoriteNews(news)
+                            } label: {
+                                HStack(spacing: 5) {
+                                    Image(viewModel.isFavorite(news) ? "selectedfavorite" : "favorite")
+                                        .resizable()
+                                        .frame(width: 12, height: 12)
+                                    
+                                    Text(viewModel.isFavorite(news) ? "ფავორიტებიდან წაშლა" : "ფავორიტებში დამატება")
+                                        .font(FontType.light.swiftUIFont(size: 10))
+                                        .foregroundStyle(viewModel.isFavorite(news) ? .customGreen : .white)
+                                }
+                            }
+                        }
                         
                         Text(news.title)
                             .font(FontType.medium.swiftUIFont(size: 16))
@@ -79,7 +97,7 @@ struct NewsDetailView: View {
                                         }
                                     )
                                     .onTapGesture {
-                                        onNewsTap?(news)
+                                        onNewsTap?(news, viewModel)
                                     }
                                 }
                             }

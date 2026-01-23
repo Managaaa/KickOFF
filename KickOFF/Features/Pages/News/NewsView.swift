@@ -2,9 +2,9 @@ import SwiftUI
 
 struct NewsView: View {
     @StateObject var viewModel: NewsViewModel
-    var onNewsTap: ((News) -> Void)?
+    var onNewsTap: ((News, HomeViewModel?) -> Void)?
     
-    init(viewModel: NewsViewModel = NewsViewModel(), onNewsTap: ((News) -> Void)? = nil) {
+    init(viewModel: NewsViewModel = NewsViewModel(), onNewsTap: ((News, HomeViewModel?) -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.onNewsTap = onNewsTap
     }
@@ -66,7 +66,7 @@ struct NewsView: View {
                                     }
                                 )
                                 .onTapGesture {
-                                    onNewsTap?(news)
+                                    onNewsTap?(news, nil)
                                 }
                             }
                         }

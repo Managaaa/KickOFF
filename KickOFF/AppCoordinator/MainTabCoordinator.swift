@@ -34,8 +34,8 @@ final class MainTabCoordinator: Coordinator {
             onBestOfNewsTap: { [weak self] news in
                 self?.showBestOfNewsDetails(news)
             },
-            onNewsTap: { [weak self] news in
-                self?.showNewsDetails(news)
+            onNewsTap: { [weak self] news, viewModel in
+                self?.showNewsDetails(news, viewModel: viewModel)
             },
             onQuizTap: { [weak self] quiz in
                 self?.showQuizDetails(quiz)
@@ -52,8 +52,8 @@ final class MainTabCoordinator: Coordinator {
         let newsViewModel = NewsViewModel()
         let newsView = NewsView(
             viewModel: newsViewModel,
-            onNewsTap: { [weak self]  news in
-                self?.showNewsDetails(news)
+            onNewsTap: { [weak self] news, viewModel in
+                self?.showNewsDetails(news, viewModel: viewModel)
             })
         let newsViewController = UIHostingController(rootView: newsView)
         let newsTabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "newspaper"), selectedImage: UIImage(systemName: "newspaper.fill"))
@@ -148,11 +148,12 @@ final class MainTabCoordinator: Coordinator {
         navigationController.pushViewController(bestOfNewsDetailViewController, animated: true)
     }
     
-    private func showNewsDetails(_ news: News) {
+    private func showNewsDetails(_ news: News, viewModel: HomeViewModel?) {
         let newsDetailView = NewsDetailView(
+            viewModel: viewModel ?? HomeViewModel(),
             news: news,
-            onNewsTap: { [weak self] news in
-                self?.showNewsDetails(news)
+            onNewsTap: { [weak self] news, viewModel in
+                self?.showNewsDetails(news, viewModel: viewModel)
             }
         )
         let newsDetailViewController = UIHostingController(rootView: newsDetailView)
@@ -165,8 +166,8 @@ final class MainTabCoordinator: Coordinator {
     
     private func showFavorites() {
         let favoritesView = FavoritesView(
-            onNewsTap: { [weak self] news in
-                self?.showNewsDetails(news)
+            onNewsTap: { [weak self] news, viewModel in
+                self?.showNewsDetails(news, viewModel: viewModel)
             }
         )
         let favoritesViewController = UIHostingController(rootView: favoritesView)
