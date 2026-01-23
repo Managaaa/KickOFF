@@ -34,16 +34,8 @@ struct SubscribedAuthorsView: View {
                     ScrollView {
                         LazyVStack(spacing: 20) {
                             ForEach(viewModel.subscribedAuthors) { author in
-                                AuthorCardView(
-                                    author: author,
-                                    isSubscribed: viewModel.isSubscribed(to: author.userId),
-                                    onSubscribeTap: {
-                                        Task {
-                                            await viewModel.toggleSubscription(author)
-                                        }
-                                    }
-                                )
-                                .padding(.horizontal, 16)
+                                SubscribedAuthorCardView(author: author)
+                                    .padding(.horizontal, 16)
                             }
                         }
                         .padding(.top, 20)
