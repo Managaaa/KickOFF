@@ -27,7 +27,7 @@ class HomeViewModel: ObservableObject {
         loadFavoriteNews()
         setupFavoriteNewsObserver()
     }
-    
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }

@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct SubscribedAuthorsView: View {
+    @ObservedObject private var viewModel = AuthorViewModel.shared
+    
     var body: some View {
         ZStack {
             Color.customBackground
@@ -18,6 +20,36 @@ struct SubscribedAuthorsView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.top, 70)
                 .padding(.horizontal, 16)
+                
+                if viewModel.isLoading {
+                    ProgressView()
+                        .tint(.white)
+                        .padding()
+                } else if viewModel.subscribedAuthors.isEmpty {
+                    Text("არ გყავს გამოწერილი ავტორები")
+                        .font(FontType.medium.swiftUIFont(size: 14))
+                        .foregroundStyle(.white.opacity(0.6))
+                        .padding()
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 20) {
+                            ForEach(viewModel.subscribedAuthors) { author in
+                                AuthorCardView(
+                                    author: author,
+                                    isSubscribed: viewModel.isSubscribed(to: author.userId),
+                                    onSubscribeTap: {
+                                        Task {
+                                            await viewModel.toggleSubscription(author)
+                                        }
+                                    }
+                                )
+                                .padding(.horizontal, 16)
+                            }
+                        }
+                        .padding(.top, 20)
+                        .padding(.bottom, 30)
+                    }
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .ignoresSafeArea(edges: .top)

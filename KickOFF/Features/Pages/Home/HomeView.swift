@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject var viewModel: HomeViewModel
+    @ObservedObject private var authorViewModel = AuthorViewModel.shared
     var onBestOfNewsTap: ((BestOfNews) -> Void)?
     var onNewsTap: ((News) -> Void)?
     var onQuizTap: ((Quiz) -> Void)?
@@ -139,6 +140,45 @@ struct HomeView: View {
                                 .scrollClipDisabled()
                             }
                             .frame(height: 300)
+                        }
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("ავტორები")
+                            .font(FontType.black.swiftUIFont(size: 20))
+                            .foregroundStyle(.white)
+                        
+                        Text("გამოიწერე შენთვის საინტერესო ავტორები")
+                            .foregroundStyle(.white.opacity(0.8))
+                            .font(FontType.medium.swiftUIFont(size: 12))
+                        
+                        if authorViewModel.isLoading {
+                            Rectangle()
+                                .foregroundStyle(.clear)
+                                .frame(height: 320)
+                        } else {
+                            GeometryReader { geometry in
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 12) {
+                                        ForEach(authorViewModel.displayedAuthors) { author in
+                                            AuthorCardView(
+                                                author: author,
+                                                isSubscribed: authorViewModel.isSubscribed(to: author.userId),
+                                                onSubscribeTap: {
+                                                    Task {
+                                                        await authorViewModel.toggleSubscription(author)
+                                                    }
+                                                }
+                                            )
+                                            .frame(width: geometry.size.width)
+                                        }
+                                    }
+                                    .scrollTargetLayout()
+                                }
+                                .scrollTargetBehavior(.viewAligned)
+                                .scrollClipDisabled()
+                            }
+                            .frame(height: 320)
                         }
                     }
                 }
