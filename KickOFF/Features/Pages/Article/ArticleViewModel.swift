@@ -108,6 +108,28 @@ final class ArticleViewModel: ObservableObject {
         }
     }
 
+    func fetchArticlesForAuthor(userId: String) {
+        isLoading = true
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                if self.currentUserId == nil {
+                    await self.loadCurrentUserId()
+                }
+                let fetched = try await articleService.fetchUserArticles(userId: userId)
+                await MainActor.run {
+                    self.articles = fetched
+                    self.isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    self.isLoading = false
+                    self.articles = []
+                }
+            }
+        }
+    }
+
     func timeAgo(from date: Date) -> String {
         let seconds = Int(Date().timeIntervalSince(date))
 
@@ -213,11 +235,11 @@ final class ArticleViewModel: ObservableObject {
             
             if let index = articles.firstIndex(where: { $0.id == article.id }) {
                 var updatedLikedBy = article.likedBy
-                
+                let updatedArticle: Article
+
                 if isCurrentlyLiked {
                     updatedLikedBy.removeAll { $0 == userId }
-                    
-                    let updatedArticle = Article(
+                    updatedArticle = Article(
                         id: article.id,
                         title: article.title,
                         text: article.text,
@@ -228,14 +250,10 @@ final class ArticleViewModel: ObservableObject {
                         likes: max(0, article.likes - 1),
                         likedBy: updatedLikedBy
                     )
-                    
-                    articles[index] = updatedArticle
-                    
                     try await articleService.unlikeArticle(articleId: article.id, userId: userId)
                 } else {
                     updatedLikedBy.append(userId)
-                    
-                    let updatedArticle = Article(
+                    updatedArticle = Article(
                         id: article.id,
                         title: article.title,
                         text: article.text,
@@ -246,11 +264,15 @@ final class ArticleViewModel: ObservableObject {
                         likes: article.likes + 1,
                         likedBy: updatedLikedBy
                     )
-                    
-                    articles[index] = updatedArticle
-                    
                     try await articleService.likeArticle(articleId: article.id, userId: userId)
                 }
+
+                var updated = articles
+                updated[index] = updatedArticle
+                articles = updated
+
+                let amount = isCurrentlyLiked ? -1 : 1
+                AuthorViewModel.shared.updateAuthorTotalLikes(userId: article.senderId, amount: amount)
             }
             
             if currentUserId == nil {

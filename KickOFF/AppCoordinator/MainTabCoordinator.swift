@@ -42,6 +42,9 @@ final class MainTabCoordinator: Coordinator {
             },
             onSeeAllTap: { [weak self] in
                 self?.switchToNewsTab()
+            },
+            onAuthorCardTap: { [weak self] author in
+                self?.showAuthorProfileView(author)
             }
         )
         let homeViewController = UIHostingController(rootView: homeView)
@@ -223,8 +226,23 @@ final class MainTabCoordinator: Coordinator {
     }
     
     private func showSubscribedAuthors() {
-        let subscribedAuthorsView = SubscribedAuthorsView()
+        let subscribedAuthorsView = SubscribedAuthorsView(
+            onAuthorCardTap: { [weak self] author in
+                self?.showAuthorProfileView(author)
+            }
+        )
         let subscribedAuthorsViewController = UIHostingController(rootView: subscribedAuthorsView)
         navigationController.pushViewController(subscribedAuthorsViewController, animated: true)
+    }
+    
+    private func showAuthorProfileView(_ author: Author) {
+        let authorProfileView = AuthorProfileView(
+            author: author,
+            onArticleCardTap: { [weak self] article in
+                self?.showArticleDetails(article)
+            }
+        )
+        let authorProfileViewController = UIHostingController(rootView: authorProfileView)
+        navigationController.pushViewController(authorProfileViewController, animated: true)
     }
 }

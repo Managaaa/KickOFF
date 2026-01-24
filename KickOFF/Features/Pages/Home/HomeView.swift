@@ -7,13 +7,15 @@ struct HomeView: View {
     var onNewsTap: ((News, HomeViewModel?) -> Void)?
     var onQuizTap: ((Quiz) -> Void)?
     var onSeeAllTap: (() -> Void)?
+    var onAuthorCardTap: ((Author) -> Void)?
     
-    init(viewModel: HomeViewModel = HomeViewModel(), onBestOfNewsTap: ((BestOfNews) -> Void)? = nil, onNewsTap: ((News, HomeViewModel?) -> Void)? = nil, onQuizTap: ((Quiz) -> Void)? = nil, onSeeAllTap: (() -> Void)? = nil) {
+    init(viewModel: HomeViewModel = HomeViewModel(), onBestOfNewsTap: ((BestOfNews) -> Void)? = nil, onNewsTap: ((News, HomeViewModel?) -> Void)? = nil, onQuizTap: ((Quiz) -> Void)? = nil, onSeeAllTap: (() -> Void)? = nil, onAuthorCardTap: ((Author) -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.onBestOfNewsTap = onBestOfNewsTap
         self.onNewsTap = onNewsTap
         self.onQuizTap = onQuizTap
         self.onSeeAllTap = onSeeAllTap
+        self.onAuthorCardTap = onAuthorCardTap
     }
     
     var body: some View {
@@ -171,6 +173,9 @@ struct HomeView: View {
                                                 }
                                             )
                                             .frame(width: geometry.size.width)
+                                            .onTapGesture {
+                                                onAuthorCardTap?(author)
+                                            }
                                         }
                                     }
                                     .scrollTargetLayout()

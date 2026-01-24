@@ -2,7 +2,8 @@ import SwiftUI
 
 struct SubscribedAuthorsView: View {
     @ObservedObject private var viewModel = AuthorViewModel.shared
-    
+    var onAuthorCardTap: ((Author) -> Void)?
+
     var body: some View {
         ZStack {
             Color.customBackground
@@ -36,6 +37,9 @@ struct SubscribedAuthorsView: View {
                             ForEach(viewModel.subscribedAuthors) { author in
                                 SubscribedAuthorCardView(author: author)
                                     .padding(.horizontal, 16)
+                                    .onTapGesture {
+                                        onAuthorCardTap?(author)
+                                    }
                             }
                         }
                         .padding(.top, 20)

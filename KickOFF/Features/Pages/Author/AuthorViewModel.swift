@@ -46,7 +46,31 @@ final class AuthorViewModel: ObservableObject {
     func isSubscribed(to authorId: String) -> Bool {
         subscribedAuthorIds.contains(authorId)
     }
-    
+
+    @MainActor
+    func isAuthorInList(_ author: Author) {
+        guard !authors.contains(where: { $0.userId == author.userId }) else { return }
+        authors.append(author)
+    }
+
+    @MainActor
+    func updateAuthorTotalLikes(userId: String, amount: Int) {
+        guard let index = authors.firstIndex(where: { $0.userId == userId }) else { return }
+        let current = authors[index]
+        let newTotal = max(0, current.totalLikes + amount)
+        let updated = Author(
+            userId: current.userId,
+            name: current.name,
+            profileImageUrl: current.profileImageUrl,
+            totalLikes: newTotal,
+            subscribers: current.subscribers,
+            articleCount: current.articleCount
+        )
+        var list = authors
+        list[index] = updated
+        authors = list
+    }
+
     @MainActor
     func toggleSubscription(_ author: Author) async {
         let isCurrentlySubscribed = subscribedAuthorIds.contains(author.userId)
@@ -67,7 +91,7 @@ final class AuthorViewModel: ObservableObject {
         subscribedAuthorIds.insert(author.userId)
         if let index = authors.firstIndex(where: { $0.userId == author.userId }) {
             let currentAuthor = authors[index]
-            authors[index] = Author(
+            let updatedAuthor = Author(
                 userId: currentAuthor.userId,
                 name: currentAuthor.name,
                 profileImageUrl: currentAuthor.profileImageUrl,
@@ -75,6 +99,9 @@ final class AuthorViewModel: ObservableObject {
                 subscribers: currentAuthor.subscribers + 1,
                 articleCount: currentAuthor.articleCount
             )
+            var updated = authors
+            updated[index] = updatedAuthor
+            authors = updated
         }
         
         do {
@@ -83,7 +110,7 @@ final class AuthorViewModel: ObservableObject {
             subscribedAuthorIds.remove(author.userId)
             if let index = authors.firstIndex(where: { $0.userId == author.userId }) {
                 let currentAuthor = authors[index]
-                authors[index] = Author(
+                let updatedAuthor = Author(
                     userId: currentAuthor.userId,
                     name: currentAuthor.name,
                     profileImageUrl: currentAuthor.profileImageUrl,
@@ -91,6 +118,9 @@ final class AuthorViewModel: ObservableObject {
                     subscribers: max(0, currentAuthor.subscribers - 1),
                     articleCount: currentAuthor.articleCount
                 )
+                var updated = authors
+                updated[index] = updatedAuthor
+                authors = updated
             }
             print(error)
         }
@@ -105,7 +135,7 @@ final class AuthorViewModel: ObservableObject {
         subscribedAuthorIds.remove(author.userId)
         if let index = authors.firstIndex(where: { $0.userId == author.userId }) {
             let currentAuthor = authors[index]
-            authors[index] = Author(
+            let updatedAuthor = Author(
                 userId: currentAuthor.userId,
                 name: currentAuthor.name,
                 profileImageUrl: currentAuthor.profileImageUrl,
@@ -113,6 +143,9 @@ final class AuthorViewModel: ObservableObject {
                 subscribers: max(0, currentAuthor.subscribers - 1),
                 articleCount: currentAuthor.articleCount
             )
+            var updated = authors
+            updated[index] = updatedAuthor
+            authors = updated
         }
         
         do {
@@ -121,7 +154,7 @@ final class AuthorViewModel: ObservableObject {
             subscribedAuthorIds.insert(author.userId)
             if let index = authors.firstIndex(where: { $0.userId == author.userId }) {
                 let currentAuthor = authors[index]
-                authors[index] = Author(
+                let updatedAuthor = Author(
                     userId: currentAuthor.userId,
                     name: currentAuthor.name,
                     profileImageUrl: currentAuthor.profileImageUrl,
@@ -129,6 +162,9 @@ final class AuthorViewModel: ObservableObject {
                     subscribers: currentAuthor.subscribers + 1,
                     articleCount: currentAuthor.articleCount
                 )
+                var updated = authors
+                updated[index] = updatedAuthor
+                authors = updated
             }
             print(error)
         }
