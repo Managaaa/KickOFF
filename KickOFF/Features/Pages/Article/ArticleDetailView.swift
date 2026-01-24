@@ -3,6 +3,12 @@ import SwiftUI
 struct ArticleDetailView: View {
     let article: Article
     @StateObject private var viewModel = ArticleViewModel()
+    var onDelete: (() -> Void)?
+    
+    init(article: Article, onDelete: (() -> Void)? = nil) {
+        self.article = article
+        self.onDelete = onDelete
+    }
     
     var body: some View {
         ZStack {
@@ -40,9 +46,23 @@ struct ArticleDetailView: View {
                             placeholder: Image("pfp")
                         )
                         
-                        Text(article.senderName)
-                            .font(FontType.medium.swiftUIFont(size: 12))
-                            .foregroundStyle(.customGreen)
+                        HStack {
+                            Text(article.senderName)
+                                .font(FontType.medium.swiftUIFont(size: 12))
+                                .foregroundStyle(.customGreen)
+                            
+                            Spacer()
+                            
+                            if viewModel.isArticleOwner(article) {
+                                Button {
+                                    viewModel.showDeleteConfirmation = true
+                                } label: {
+                                    Image("delete")
+                                        .resizable()
+                                        .frame(width: 20, height: 20)
+                                }
+                            }
+                        }
                     }
                     
                     Text(article.text)
@@ -54,6 +74,19 @@ struct ArticleDetailView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 20)
             }
+        }
+        .onAppear {
+            viewModel.onDelete = {
+                onDelete?()
+            }
+        }
+        .alert("ნამდვილად გინდა არტიკლის წაშლა?", isPresented: $viewModel.showDeleteConfirmation) {
+            Button("კი", role: .destructive) {
+                Task {
+                    await viewModel.deleteArticle(article)
+                }
+            }
+            Button("არა", role: .cancel) { }
         }
     }
 }

@@ -205,7 +205,9 @@ final class MainTabCoordinator: Coordinator {
     }
     
     private func showArticleDetails(_ article: Article) {
-        let articleDetailsView = ArticleDetailView(article: article)
+        let articleDetailsView = ArticleDetailView(article: article) { [weak self] in
+            self?.navigationController.popViewController(animated: true)
+        }
         let articleDetailViewController = UIHostingController(rootView: articleDetailsView)
         navigationController.pushViewController(articleDetailViewController, animated: true)
     }

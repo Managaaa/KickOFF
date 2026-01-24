@@ -15,8 +15,10 @@ final class ArticleViewModel: ObservableObject {
     @Published var isUploading: Bool = false
     @Published var shouldPopAfterAlert: Bool = false
     @Published var currentUserId: String?
+    @Published var showDeleteConfirmation: Bool = false
 
     var onSuccess: (() -> Void)?
+    var onDelete: (() -> Void)?
 
     private let authService: FirebaseAuthService
     private let articleService: ArticleService
@@ -258,6 +260,21 @@ final class ArticleViewModel: ObservableObject {
             fetchArticles()
             print(error)
         }
+    }
+    
+    @MainActor
+    func deleteArticle(_ article: Article) async {
+        do {
+            try await articleService.deleteArticle(articleId: article.id)
+            onDelete?()
+        } catch {
+            presentErrorAlert(message: "ცადეთ თავიდან")
+        }
+    }
+    
+    func isArticleOwner(_ article: Article) -> Bool {
+        guard let userId = currentUserId else { return false }
+        return article.senderId == userId
     }
 }
 

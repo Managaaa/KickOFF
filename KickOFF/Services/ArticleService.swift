@@ -98,5 +98,9 @@ final class ArticleService {
             "likes": FieldValue.increment(Int64(-1))
         ])
     }
+    
+    func deleteArticle(articleId: String) async throws {
+        try await db.collection("articles").document(articleId).delete()
+    }
 }
 

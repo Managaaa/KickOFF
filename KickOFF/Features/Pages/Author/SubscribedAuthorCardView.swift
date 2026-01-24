@@ -28,7 +28,7 @@ struct SubscribedAuthorCardView: View {
                 
                 VStack(alignment: .leading, spacing: 10) {
                     Text(author.name)
-                        .font(FontType.black.swiftUIFont(size: 16))
+                        .font(FontType.bold.swiftUIFont(size: 16))
                         .foregroundStyle(.white)
                     HStack(spacing: 8) {
                         HStack(spacing: 6) {
