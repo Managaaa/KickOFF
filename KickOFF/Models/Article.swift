@@ -7,6 +7,7 @@ struct Article: Identifiable {
     let senderId: String
     let senderName: String
     let profileImageUrl: String
+    let imageUrl: String?
     let timestamp: Date
     let likes: Int
     let likedBy: [String]
@@ -18,6 +19,7 @@ struct Article: Identifiable {
         senderId: String,
         senderName: String,
         profileImageUrl: String,
+        imageUrl: String? = nil,
         timestamp: Date,
         likes: Int,
         likedBy: [String]
@@ -28,6 +30,7 @@ struct Article: Identifiable {
         self.senderId = senderId
         self.senderName = senderName
         self.profileImageUrl = profileImageUrl
+        self.imageUrl = imageUrl
         self.timestamp = timestamp
         self.likes = likes
         self.likedBy = likedBy
@@ -54,6 +57,7 @@ struct Article: Identifiable {
         self.senderId = senderId
         self.senderName = senderName
         self.profileImageUrl = profileImageUrl
+        self.imageUrl = data["imageUrl"] as? String
         self.timestamp = timestamp.dateValue()
         self.likes = likes
         self.likedBy = data["likedBy"] as? [String] ?? []

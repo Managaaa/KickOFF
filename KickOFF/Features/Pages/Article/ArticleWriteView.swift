@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ArticleWriteView: View {
     @StateObject private var viewModel: ArticleViewModel
+    @State private var showImagePicker = false
 
     init(viewModel: ArticleViewModel, onFinish: (() -> Void)? = nil) {
         viewModel.onSuccess = onFinish
@@ -24,6 +25,28 @@ struct ArticleWriteView: View {
 
                 ArticleTitleTextFieldView(text: $viewModel.title)
                     .padding(.horizontal, 16)
+                
+                HStack {
+                    Button {
+                        showImagePicker = true
+                    } label: {
+                        Text("+ დაამატე ფოტო")
+                            .font(FontType.medium.swiftUIFont(size: 12))
+                            .foregroundStyle(.customGreen)
+                    }
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, 16)
+                
+                if let image = viewModel.selectedImage {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxHeight: 200)
+                        .cornerRadius(10)
+                        .padding(.horizontal, 16)
+                }
 
                 ArticleBodyTextEditorView(text: $viewModel.body)
                     .padding(.horizontal, 16)
@@ -37,6 +60,9 @@ struct ArticleWriteView: View {
             .padding(.bottom, 50)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .ignoresSafeArea(edges: .top)
+        }
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker(image: $viewModel.selectedImage)
         }
         .alert(Text(viewModel.alertTitle), isPresented: $viewModel.isAlertPresented) {
             Button("კარგი", role: .cancel) {

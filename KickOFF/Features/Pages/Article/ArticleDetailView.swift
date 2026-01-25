@@ -31,6 +31,19 @@ struct ArticleDetailView: View {
                         .font(FontType.black.swiftUIFont(size: 20))
                         .foregroundStyle(.white)
                     
+                    if let imageUrl = displayArticle.imageUrl, !imageUrl.isEmpty {
+                        KingfisherImageLoader.news(
+                            imageUrl: imageUrl,
+                            width: UIScreen.main.bounds.width - 32,
+                            height: nil,
+                            cornerRadius: 10,
+                            placeholder: Image(systemName: "photo")
+                        )
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: UIScreen.main.bounds.width - 32)
+                        .padding(.top, 8)
+                    }
+                    
                     HStack(spacing: 5) {
                         Text(viewModel.timeAgo(from: displayArticle.timestamp))
                             .font(FontType.light.swiftUIFont(size: 12))

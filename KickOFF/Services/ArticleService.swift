@@ -1,7 +1,7 @@
 import FirebaseFirestore
 
 protocol ArticleServiceProtocol: AnyObject {
-    func createArticle(title: String, text: String, senderId: String, senderName: String, profileImageUrl: String) async throws -> String
+    func createArticle(title: String, text: String, senderId: String, senderName: String, profileImageUrl: String, imageUrl: String?) async throws -> String
     func fetchArticles() async throws -> [Article]
     func searchArticles(query: String) async throws -> [Article]
     func fetchUserArticles(userId: String) async throws -> [Article]
@@ -19,10 +19,10 @@ final class ArticleService: ArticleServiceProtocol {
 
     private init() {}
 
-    func createArticle(title: String, text: String, senderId: String, senderName: String, profileImageUrl: String) async throws -> String {
+    func createArticle(title: String, text: String, senderId: String, senderName: String, profileImageUrl: String, imageUrl: String? = nil) async throws -> String {
         let docRef = db.collection("articles").document()
 
-        try await docRef.setData([
+        var data: [String: Any] = [
             "title": title,
             "text": text,
             "senderId": senderId,
@@ -31,7 +31,13 @@ final class ArticleService: ArticleServiceProtocol {
             "timestamp": FieldValue.serverTimestamp(),
             "likes": 0,
             "likedBy": []
-        ])
+        ]
+        
+        if let imageUrl = imageUrl {
+            data["imageUrl"] = imageUrl
+        }
+
+        try await docRef.setData(data)
 
         return docRef.documentID
     }
