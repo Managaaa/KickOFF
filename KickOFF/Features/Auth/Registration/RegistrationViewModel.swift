@@ -97,7 +97,6 @@ class RegistrationViewModel: ObservableObject {
             } catch {
                 await MainActor.run {
                     self.onLoadingStateChanged?(false)
-                    //self.handleAuthError(error) არასაჭირო ალერტებს იწვევს იყოს დროებით
                 }
             }
         }

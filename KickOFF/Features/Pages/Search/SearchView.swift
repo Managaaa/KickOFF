@@ -8,14 +8,7 @@ struct SearchView: View {
     var onArticleTap: ((Article) -> Void)?
     var onAuthorTap: ((Author) -> Void)?
 
-    init(
-        viewModel: SearchViewModel,
-        onNewsTap: ((News) -> Void)? = nil,
-        onBestOfNewsTap: ((BestOfNews) -> Void)? = nil,
-        onQuizTap: ((Quiz) -> Void)? = nil,
-        onArticleTap: ((Article) -> Void)? = nil,
-        onAuthorTap: ((Author) -> Void)? = nil
-    ) {
+    init(viewModel: SearchViewModel, onNewsTap: ((News) -> Void)? = nil, onBestOfNewsTap: ((BestOfNews) -> Void)? = nil, onQuizTap: ((Quiz) -> Void)? = nil, onArticleTap: ((Article) -> Void)? = nil, onAuthorTap: ((Author) -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.onNewsTap = onNewsTap
         self.onBestOfNewsTap = onBestOfNewsTap
