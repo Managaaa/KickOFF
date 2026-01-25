@@ -63,7 +63,24 @@ final class MainTabCoordinator: Coordinator {
         newsTabBarItem.tag = AppTab.news.rawValue
         newsViewController.tabBarItem = newsTabBarItem
         
-        let searchViewController = UIViewController()
+        let searchView = SearchView(
+            onNewsTap: { [weak self] news in
+                self?.showNewsDetails(news, viewModel: nil)
+            },
+            onBestOfNewsTap: { [weak self] news in
+                self?.showBestOfNewsDetails(news)
+            },
+            onQuizTap: { [weak self] quiz in
+                self?.showQuizDetails(quiz)
+            },
+            onArticleTap: { [weak self] article in
+                self?.showArticleDetails(article)
+            },
+            onAuthorTap: { [weak self] author in
+                self?.showAuthorProfileView(author)
+            }
+        )
+        let searchViewController = UIHostingController(rootView: searchView)
         let searchTabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "magnifyingglass"), selectedImage: UIImage(systemName: "magnifyingglass"))
         searchTabBarItem.tag = AppTab.search.rawValue
         searchViewController.tabBarItem = searchTabBarItem
@@ -244,5 +261,6 @@ final class MainTabCoordinator: Coordinator {
         )
         let authorProfileViewController = UIHostingController(rootView: authorProfileView)
         navigationController.pushViewController(authorProfileViewController, animated: true)
+        
     }
 }

@@ -31,6 +31,15 @@ final class ArticleService {
 
         return snapshot.documents.compactMap { Article(document: $0) }
     }
+
+    func searchArticles(query: String) async throws -> [Article] {
+        guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return [] }
+        let all = try await fetchArticles()
+        let q = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        return all.filter {
+            $0.title.lowercased().contains(q) || $0.senderName.lowercased().contains(q)
+        }
+    }
     
     func fetchUserArticles(userId: String) async throws -> [Article] {
         do {
