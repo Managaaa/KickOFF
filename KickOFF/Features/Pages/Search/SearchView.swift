@@ -21,22 +21,9 @@ struct SearchView: View {
                     .padding(.top, 70)
                     .padding(.horizontal, 16)
                 
-                TextField("", text: $viewModel.searchQuery, prompt: Text("ძებნა...")
-                    .font(FontType.medium.swiftUIFont(size: 12))
-                    .foregroundStyle(.gray))
-                .textFieldStyle(.plain)
-                .font(FontType.medium.swiftUIFont(size: 14))
-                .foregroundStyle(.white)
-                .tint(.white)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 14)
-                .background(Color.clear)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.customGray, lineWidth: 1)
-                )
-                .padding(.horizontal, 16)
-                .padding(.top, 20)
+                SearchTextField(text: $viewModel.searchQuery)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 20)
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
