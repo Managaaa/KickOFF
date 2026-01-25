@@ -63,7 +63,9 @@ final class MainTabCoordinator: Coordinator {
         newsTabBarItem.tag = AppTab.news.rawValue
         newsViewController.tabBarItem = newsTabBarItem
         
+        let searchViewModel = SearchViewModel()
         let searchView = SearchView(
+            viewModel: searchViewModel,
             onNewsTap: { [weak self] news in
                 self?.showNewsDetails(news, viewModel: nil)
             },
@@ -85,7 +87,9 @@ final class MainTabCoordinator: Coordinator {
         searchTabBarItem.tag = AppTab.search.rawValue
         searchViewController.tabBarItem = searchTabBarItem
         
+        let articlesViewModel = ArticleViewModel()
         let articlesView = ArticlesView(
+            viewModel: articlesViewModel,
             onWriteTap: { [weak self] in
                 self?.showArticleWrite()
             },
@@ -158,7 +162,9 @@ final class MainTabCoordinator: Coordinator {
     }
     
     private func showBestOfNewsDetails(_ news: BestOfNews) {
+        let bestOfViewModel = HomeViewModel()
         let bestOfNewsDetailView = BestOfNewsDetailView(
+            viewModel: bestOfViewModel,
             news: news,
             onBestOfNewsTap: { [weak self] news in
                 self?.showBestOfNewsDetails(news)
@@ -185,7 +191,9 @@ final class MainTabCoordinator: Coordinator {
     }
     
     private func showFavorites() {
+        let favoritesViewModel = HomeViewModel()
         let favoritesView = FavoritesView(
+            viewModel: favoritesViewModel,
             onNewsTap: { [weak self] news, viewModel in
                 self?.showNewsDetails(news, viewModel: viewModel)
             }
@@ -195,7 +203,9 @@ final class MainTabCoordinator: Coordinator {
     }
     
     private func showQuizDetails(_ quiz: Quiz) {
+        let quizViewModel = HomeViewModel()
         let quizView = QuizView(
+            viewModel: quizViewModel,
             quiz: quiz,
             onQuizTap: { [weak self] quiz in
                 self?.showQuizDetails(quiz)
@@ -209,7 +219,8 @@ final class MainTabCoordinator: Coordinator {
     }
     
     private func showQuizDetailsView(_ quiz: Quiz) {
-        let quizDetailsView = QuizDetailsView(quiz: quiz, onFinish: { [weak self] in
+        let quizDetailsViewModel = QuizDetailsViewModel(quizId: quiz.id)
+        let quizDetailsView = QuizDetailsView(quiz: quiz, viewModel: quizDetailsViewModel, onFinish: { [weak self] in
             self?.navigationController.popViewController(animated: true)
         })
         let quizDetailsViewController = UIHostingController(rootView: quizDetailsView)
@@ -217,7 +228,8 @@ final class MainTabCoordinator: Coordinator {
     }
     
     private func showArticleWrite() {
-        let articleWriteView = ArticleWriteView(onFinish: { [weak self] in
+        let articleWriteViewModel = ArticleViewModel()
+        let articleWriteView = ArticleWriteView(viewModel: articleWriteViewModel, onFinish: { [weak self] in
             self?.navigationController.popViewController(animated: true)
         })
         let articleWriteViewController = UIHostingController(rootView: articleWriteView)
@@ -225,7 +237,8 @@ final class MainTabCoordinator: Coordinator {
     }
     
     private func showArticleDetails(_ article: Article) {
-        let articleDetailsView = ArticleDetailView(article: article) { [weak self] in
+        let articleDetailsViewModel = ArticleViewModel()
+        let articleDetailsView = ArticleDetailView(article: article, viewModel: articleDetailsViewModel) { [weak self] in
             self?.navigationController.popViewController(animated: true)
         }
         let articleDetailViewController = UIHostingController(rootView: articleDetailsView)
@@ -233,7 +246,9 @@ final class MainTabCoordinator: Coordinator {
     }
     
     private func showMyArticles() {
+        let myArticlesViewModel = ArticleViewModel()
         let myArticlesView = MyArticlesView(
+            viewModel: myArticlesViewModel,
             onArticleCardTap: { [weak self] article in
                 self?.showArticleDetails(article)
             }
@@ -253,8 +268,10 @@ final class MainTabCoordinator: Coordinator {
     }
     
     private func showAuthorProfileView(_ author: Author) {
+        let authorProfileViewModel = ArticleViewModel()
         let authorProfileView = AuthorProfileView(
             author: author,
+            viewModel: authorProfileViewModel,
             onArticleCardTap: { [weak self] article in
                 self?.showArticleDetails(article)
             }

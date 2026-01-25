@@ -3,7 +3,7 @@ import SwiftUI
 struct ArticleWriteView: View {
     @StateObject private var viewModel: ArticleViewModel
 
-    init(viewModel: ArticleViewModel = ArticleViewModel(), onFinish: (() -> Void)? = nil) {
+    init(viewModel: ArticleViewModel, onFinish: (() -> Void)? = nil) {
         viewModel.onSuccess = onFinish
         _viewModel = StateObject(wrappedValue: viewModel)
     }
@@ -51,5 +51,5 @@ struct ArticleWriteView: View {
 }
 
 #Preview {
-    ArticleWriteView()
+    ArticleWriteView(viewModel: ArticleViewModel())
 }

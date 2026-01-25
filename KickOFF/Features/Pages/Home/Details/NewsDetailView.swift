@@ -5,7 +5,7 @@ struct NewsDetailView: View {
     var onNewsTap: ((News, HomeViewModel?) -> Void)?
     @StateObject var viewModel: HomeViewModel
     
-    init(viewModel: HomeViewModel = HomeViewModel(), news: News, onNewsTap: ((News, HomeViewModel?) -> Void)? = nil) {
+    init(viewModel: HomeViewModel, news: News, onNewsTap: ((News, HomeViewModel?) -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.news = news
         self.onNewsTap = onNewsTap

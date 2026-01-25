@@ -3,8 +3,14 @@ import SwiftUI
 struct AuthorProfileView: View {
     let author: Author
     var onArticleCardTap: ((Article) -> Void)?
-    @StateObject private var viewModel = ArticleViewModel()
+    @StateObject private var viewModel: ArticleViewModel
     @ObservedObject private var authorViewModel = AuthorViewModel.shared
+
+    init(author: Author, viewModel: ArticleViewModel, onArticleCardTap: ((Article) -> Void)? = nil) {
+        self.author = author
+        _viewModel = StateObject(wrappedValue: viewModel)
+        self.onArticleCardTap = onArticleCardTap
+    }
 
     private var displayAuthor: Author {
         authorViewModel.authors.first { $0.userId == author.userId } ?? author

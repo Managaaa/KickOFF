@@ -7,7 +7,13 @@ struct RegistrationView: View {
     
     let onLogin: () -> Void
     let onSuccess: (() -> Void)?
-    
+
+    init(viewModel: RegistrationViewModel, onLogin: @escaping () -> Void, onSuccess: (() -> Void)?) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+        self.onLogin = onLogin
+        self.onSuccess = onSuccess
+    }
+
     //MARK: - Body
     var body: some View {
         ZStack(alignment: .topLeading) {

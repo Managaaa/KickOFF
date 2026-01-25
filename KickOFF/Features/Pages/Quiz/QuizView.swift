@@ -7,7 +7,7 @@ struct QuizView: View {
     @StateObject var viewModel: HomeViewModel
     @State private var startButtonTitle: String = "დაიწყე ქვიზი"
     
-    init(viewModel: HomeViewModel = HomeViewModel(), quiz: Quiz, onQuizTap: ((Quiz) -> Void)? = nil, onStartQuiz: ((Quiz) -> Void)? = nil) {
+    init(viewModel: HomeViewModel, quiz: Quiz, onQuizTap: ((Quiz) -> Void)? = nil, onStartQuiz: ((Quiz) -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.quiz = quiz
         self.onQuizTap = onQuizTap

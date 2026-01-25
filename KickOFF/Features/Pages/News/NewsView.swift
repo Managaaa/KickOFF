@@ -4,7 +4,7 @@ struct NewsView: View {
     @StateObject var viewModel: NewsViewModel
     var onNewsTap: ((News, HomeViewModel?) -> Void)?
     
-    init(viewModel: NewsViewModel = NewsViewModel(), onNewsTap: ((News, HomeViewModel?) -> Void)? = nil) {
+    init(viewModel: NewsViewModel, onNewsTap: ((News, HomeViewModel?) -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.onNewsTap = onNewsTap
     }

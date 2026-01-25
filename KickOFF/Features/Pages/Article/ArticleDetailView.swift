@@ -2,12 +2,13 @@ import SwiftUI
 
 struct ArticleDetailView: View {
     let article: Article
-    @StateObject private var viewModel = ArticleViewModel()
+    @StateObject private var viewModel: ArticleViewModel
     var onDelete: (() -> Void)?
     @State private var commentText: String = ""
 
-    init(article: Article, onDelete: (() -> Void)? = nil) {
+    init(article: Article, viewModel: ArticleViewModel, onDelete: (() -> Void)? = nil) {
         self.article = article
+        _viewModel = StateObject(wrappedValue: viewModel)
         self.onDelete = onDelete
     }
 
