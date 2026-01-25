@@ -68,6 +68,8 @@ struct NewsView: View {
                                 .onTapGesture {
                                     onNewsTap?(news, nil)
                                 }
+                                .padding(.top, 4)
+                                .padding(.bottom, 10)
                             }
                         }
                     }

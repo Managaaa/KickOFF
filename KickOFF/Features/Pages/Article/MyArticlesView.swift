@@ -48,6 +48,8 @@ struct MyArticlesView: View {
                                 .onTapGesture {
                                     onArticleCardTap?(article)
                                 }
+                                .padding(.top, 4)
+                                .padding(.bottom, 10)
                             }
                         }
                     }

@@ -51,6 +51,7 @@ struct FavoritesView: View {
                                 .onTapGesture {
                                     onNewsTap?(news, viewModel)
                                 }
+                                .padding(.top, 4)
                             }
                         }
                     }
