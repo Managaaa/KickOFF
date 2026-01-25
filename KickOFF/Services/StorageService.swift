@@ -1,7 +1,12 @@
 import FirebaseStorage
 import UIKit
 
-final class StorageService {
+protocol StorageServiceProtocol: AnyObject {
+    func uploadProfileImage(_ image: UIImage, uid: String) async throws -> String
+    func deleteProfileImage(uid: String) async throws
+}
+
+final class StorageService: StorageServiceProtocol {
     static let shared = StorageService()
     private let storage = Storage.storage()
     

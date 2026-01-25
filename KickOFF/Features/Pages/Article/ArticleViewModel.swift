@@ -27,12 +27,12 @@ final class ArticleViewModel: ObservableObject {
     var onSuccess: (() -> Void)?
     var onDelete: (() -> Void)?
 
-    private let authService: FirebaseAuthService
-    private let articleService: ArticleService
+    private let authService: AuthServiceProtocol
+    private let articleService: ArticleServiceProtocol
 
     init(
-        authService: FirebaseAuthService = .shared,
-        articleService: ArticleService = .shared
+        authService: AuthServiceProtocol = FirebaseAuthService.shared,
+        articleService: ArticleServiceProtocol = ArticleService.shared
     ) {
         self.authService = authService
         self.articleService = articleService

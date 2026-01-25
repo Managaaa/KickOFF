@@ -14,6 +14,8 @@
 		E43F4FB72F0C3E3F00F306B4 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = E43F4FB62F0C3E3F00F306B4 /* GoogleSignIn */; };
 		E43F4FB92F0C3E3F00F306B4 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E43F4FB82F0C3E3F00F306B4 /* GoogleSignInSwift */; };
 		E4A73A412F1BB5E700E404DC /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = E4A73A402F1BB5E700E404DC /* Kingfisher */; };
+		E4C2BEED2F264B5C00B5D83C /* FirebaseAI in Frameworks */ = {isa = PBXBuildFile; productRef = E4C2BEEC2F264B5C00B5D83C /* FirebaseAI */; };
+		E4C2BEEF2F264B5C00B5D83C /* FirebaseAILogic in Frameworks */ = {isa = PBXBuildFile; productRef = E4C2BEEE2F264B5C00B5D83C /* FirebaseAILogic */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,11 +48,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4C2BEEF2F264B5C00B5D83C /* FirebaseAILogic in Frameworks */,
 				E43F4FB72F0C3E3F00F306B4 /* GoogleSignIn in Frameworks */,
 				E41186012F0869E800FB8EA3 /* FirebaseDatabase in Frameworks */,
 				E4A73A412F1BB5E700E404DC /* Kingfisher in Frameworks */,
 				E41186052F0869E800FB8EA3 /* FirebaseStorage in Frameworks */,
 				E43F4FB92F0C3E3F00F306B4 /* GoogleSignInSwift in Frameworks */,
+				E4C2BEED2F264B5C00B5D83C /* FirebaseAI in Frameworks */,
 				E41185FF2F0869E800FB8EA3 /* FirebaseAuth in Frameworks */,
 				E41186032F0869E800FB8EA3 /* FirebaseFirestore in Frameworks */,
 			);
@@ -63,6 +67,7 @@
 			isa = PBXGroup;
 			children = (
 				E457952C2F06A90D009C68DA /* KickOFF */,
+				E4C2BEEB2F264B5C00B5D83C /* Frameworks */,
 				E457952B2F06A90D009C68DA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -73,6 +78,13 @@
 				E457952A2F06A90D009C68DA /* KickOFF.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		E4C2BEEB2F264B5C00B5D83C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -102,6 +114,8 @@
 				E43F4FB62F0C3E3F00F306B4 /* GoogleSignIn */,
 				E43F4FB82F0C3E3F00F306B4 /* GoogleSignInSwift */,
 				E4A73A402F1BB5E700E404DC /* Kingfisher */,
+				E4C2BEEC2F264B5C00B5D83C /* FirebaseAI */,
+				E4C2BEEE2F264B5C00B5D83C /* FirebaseAILogic */,
 			);
 			productName = KickOFF;
 			productReference = E457952A2F06A90D009C68DA /* KickOFF.app */;
@@ -437,6 +451,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E4A73A3F2F1BB5E700E404DC /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		E4C2BEEC2F264B5C00B5D83C /* FirebaseAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E41185FD2F0869E800FB8EA3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAI;
+		};
+		E4C2BEEE2F264B5C00B5D83C /* FirebaseAILogic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E41185FD2F0869E800FB8EA3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAILogic;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

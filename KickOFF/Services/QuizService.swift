@@ -1,6 +1,11 @@
 import FirebaseFirestore
 
-final class QuizService {
+protocol QuizServiceProtocol: AnyObject {
+    func fetchQuizzes() async -> [Quiz]
+    func fetchQuestions(for quizId: String) async -> [QuizQuestion]
+}
+
+final class QuizService: QuizServiceProtocol {
     
     private let db = Firestore.firestore()
     

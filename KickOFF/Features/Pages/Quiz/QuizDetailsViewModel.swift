@@ -13,14 +13,14 @@ class QuizDetailsViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     
     private var shuffledAnswersForQuestions: [String: [String]] = [:]
-    private let quizService: QuizService
+    private let quizService: QuizServiceProtocol
     private let quizId: String
     private var hasCompletedQuiz: Bool = false
     
     private var questionIdsKey: String { "quizProgress_questionIds_\(quizId)" }
     private var currentIndexKey: String { "quizProgress_currentIndex_\(quizId)" }
     
-    init(quizId: String, quizService: QuizService = QuizService()) {
+    init(quizId: String, quizService: QuizServiceProtocol = QuizService()) {
         self.quizId = quizId
         self.quizService = quizService
         fetchQuestions()

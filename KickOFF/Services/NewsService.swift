@@ -1,7 +1,14 @@
 import FirebaseFirestore
 import FirebaseAuth
 
-final class NewsService {
+protocol NewsServiceProtocol: AnyObject {
+    func fetchBestOfNews() async -> [BestOfNews]
+    func fetchNews(limit: Int?) async -> [News]
+    func addFavoriteNews(newsId: String) async throws
+    func removeFavoriteNews(newsId: String) async throws
+}
+
+final class NewsService: NewsServiceProtocol {
     
     private let db = Firestore.firestore()
     private let auth = Auth.auth()
