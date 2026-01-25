@@ -19,6 +19,9 @@ final class ArticleViewModel: ObservableObject {
     @Published var comments: [Comment] = []
     @Published var isLoadingComments: Bool = false
     @Published var isSendingComment: Bool = false
+    @Published var isDeletingComment: Bool = false
+    @Published var commentToDelete: (articleId: String, commentId: String)?
+    @Published var showDeleteCommentConfirmation: Bool = false
     @Published var detailArticle: Article?
 
     var onSuccess: (() -> Void)?
@@ -306,6 +309,11 @@ final class ArticleViewModel: ObservableObject {
         return article.senderId == userId
     }
 
+    func isCommentAuthor(_ comment: Comment) -> Bool {
+        guard let userId = currentUserId else { return false }
+        return comment.senderId == userId
+    }
+
     func fetchComments(articleId: String) {
         isLoadingComments = true
         Task { [weak self] in
@@ -357,6 +365,20 @@ final class ArticleViewModel: ObservableObject {
         } catch {
             presentErrorAlert(message: "კომენტარის გაგზავნა ვერ მოხერხდა")
             return false
+        }
+    }
+
+    @MainActor
+    func deleteComment(articleId: String, commentId: String) async {
+        isDeletingComment = true
+        defer { isDeletingComment = false }
+        do {
+            try await articleService.deleteComment(articleId: articleId, commentId: commentId)
+            comments.removeAll { $0.id == commentId }
+            commentToDelete = nil
+            showDeleteCommentConfirmation = false
+        } catch {
+            presentErrorAlert(message: "კომენტარის წაშლა ვერ მოხერხდა")
         }
     }
 }

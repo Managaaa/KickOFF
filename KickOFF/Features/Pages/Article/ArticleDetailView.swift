@@ -105,7 +105,16 @@ struct ArticleDetailView: View {
                     } else {
                         VStack(alignment: .leading, spacing: 16) {
                             ForEach(viewModel.comments) { comment in
-                                CommentCard(comment: comment, timeAgo: viewModel.timeAgo(from: comment.timestamp))
+                                CommentCard(
+                                    comment: comment,
+                                    timeAgo: viewModel.timeAgo(from: comment.timestamp),
+                                    canDelete: viewModel.isCommentAuthor(comment),
+                                    isDeleteDisabled: viewModel.isDeletingComment,
+                                    onDelete: {
+                                        viewModel.commentToDelete = (article.id, comment.id)
+                                        viewModel.showDeleteCommentConfirmation = true
+                                    }
+                                )
                             }
                         }
                     }
@@ -140,6 +149,18 @@ struct ArticleDetailView: View {
                 }
             }
             Button("არა", role: .cancel) { }
+        }
+        .alert("ნამდვილად გინდა კომენტარის წაშლა?", isPresented: $viewModel.showDeleteCommentConfirmation) {
+            Button("კი", role: .destructive) {
+                guard let pair = viewModel.commentToDelete else { return }
+                Task {
+                    await viewModel.deleteComment(articleId: pair.articleId, commentId: pair.commentId)
+                }
+            }
+            Button("არა", role: .cancel) {
+                viewModel.commentToDelete = nil
+                viewModel.showDeleteCommentConfirmation = false
+            }
         }
         .alert(Text(viewModel.alertTitle), isPresented: $viewModel.isAlertPresented) {
             Button("კარგი", role: .cancel) {

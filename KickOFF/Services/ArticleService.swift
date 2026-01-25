@@ -131,5 +131,14 @@ final class ArticleService {
         ])
         return ref.documentID
     }
+
+    func deleteComment(articleId: String, commentId: String) async throws {
+        try await db
+            .collection("articles")
+            .document(articleId)
+            .collection("comments")
+            .document(commentId)
+            .delete()
+    }
 }
 

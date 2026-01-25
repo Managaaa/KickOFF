@@ -3,7 +3,10 @@ import SwiftUI
 struct CommentCard: View {
     let comment: Comment
     let timeAgo: String
-    
+    var canDelete: Bool = false
+    var isDeleteDisabled: Bool = false
+    var onDelete: (() -> Void)?
+
     var body: some View {
         ZStack(alignment: .leading) {
             Color.clear
@@ -29,6 +32,23 @@ struct CommentCard: View {
                     Text(comment.text)
                         .font(FontType.medium.swiftUIFont(size: 13))
                         .foregroundStyle(.white)
+                }
+
+                Spacer()
+
+                if canDelete {
+                    VStack {
+                        Spacer()
+                        Button {
+                            onDelete?()
+                        } label: {
+                            Image("delete")
+                                .resizable()
+                                .frame(width: 18, height: 18)
+                        }
+                        .disabled(isDeleteDisabled)
+                        Spacer()
+                    }
                 }
             }
             .padding(12)
