@@ -6,13 +6,7 @@ final class ArticleService {
 
     private init() {}
 
-    func createArticle(
-        title: String,
-        text: String,
-        senderId: String,
-        senderName: String,
-        profileImageUrl: String
-    ) async throws -> String {
+    func createArticle(title: String, text: String, senderId: String, senderName: String, profileImageUrl: String) async throws -> String {
         let docRef = db.collection("articles").document()
 
         try await docRef.setData([
@@ -101,6 +95,32 @@ final class ArticleService {
     
     func deleteArticle(articleId: String) async throws {
         try await db.collection("articles").document(articleId).delete()
+    }
+
+    func fetchComments(articleId: String) async throws -> [Comment] {
+        let snapshot = try await db
+            .collection("articles")
+            .document(articleId)
+            .collection("comments")
+            .order(by: "timestamp", descending: false)
+            .getDocuments()
+        return snapshot.documents.compactMap { Comment(document: $0, articleId: articleId) }
+    }
+
+    func addComment(articleId: String, senderId: String, senderName: String, profileImageUrl: String?, text: String) async throws -> String {
+        let ref = db
+            .collection("articles")
+            .document(articleId)
+            .collection("comments")
+            .document()
+        try await ref.setData([
+            "senderId": senderId,
+            "senderName": senderName,
+            "profileImageUrl": profileImageUrl ?? "",
+            "text": text,
+            "timestamp": FieldValue.serverTimestamp()
+        ])
+        return ref.documentID
     }
 }
 

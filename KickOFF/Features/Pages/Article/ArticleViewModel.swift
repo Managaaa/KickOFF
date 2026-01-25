@@ -16,6 +16,9 @@ final class ArticleViewModel: ObservableObject {
     @Published var shouldPopAfterAlert: Bool = false
     @Published var currentUserId: String?
     @Published var showDeleteConfirmation: Bool = false
+    @Published var comments: [Comment] = []
+    @Published var isLoadingComments: Bool = false
+    @Published var isSendingComment: Bool = false
 
     var onSuccess: (() -> Void)?
     var onDelete: (() -> Void)?
@@ -297,6 +300,60 @@ final class ArticleViewModel: ObservableObject {
     func isArticleOwner(_ article: Article) -> Bool {
         guard let userId = currentUserId else { return false }
         return article.senderId == userId
+    }
+
+    func fetchComments(articleId: String) {
+        isLoadingComments = true
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                let fetched = try await articleService.fetchComments(articleId: articleId)
+                await MainActor.run {
+                    self.comments = fetched
+                    self.isLoadingComments = false
+                }
+            } catch {
+                await MainActor.run {
+                    self.comments = []
+                    self.isLoadingComments = false
+                }
+            }
+        }
+    }
+
+    @MainActor
+    func addComment(articleId: String, text: String) async -> Bool {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return false }
+        guard let user = try? await authService.getCurrentUser() else { return false }
+        let senderId = user.id ?? Auth.auth().currentUser?.uid ?? ""
+        guard !senderId.isEmpty else { return false }
+
+        isSendingComment = true
+        defer { isSendingComment = false }
+        do {
+            let commentId = try await articleService.addComment(
+                articleId: articleId,
+                senderId: senderId,
+                senderName: user.name,
+                profileImageUrl: user.profileImageUrl,
+                text: trimmed
+            )
+            let newComment = Comment(
+                id: commentId,
+                articleId: articleId,
+                senderId: senderId,
+                senderName: user.name,
+                profileImageUrl: user.profileImageUrl,
+                text: trimmed,
+                timestamp: Date()
+            )
+            comments.append(newComment)
+            return true
+        } catch {
+            presentErrorAlert(message: "კომენტარის გაგზავნა ვერ მოხერხდა")
+            return false
+        }
     }
 }
 

@@ -4,7 +4,8 @@ struct ArticleDetailView: View {
     let article: Article
     @StateObject private var viewModel = ArticleViewModel()
     var onDelete: (() -> Void)?
-    
+    @State private var commentText: String = ""
+
     init(article: Article, onDelete: (() -> Void)? = nil) {
         self.article = article
         self.onDelete = onDelete
@@ -69,16 +70,49 @@ struct ArticleDetailView: View {
                         .font(FontType.medium.swiftUIFont(size: 14))
                         .foregroundStyle(.white)
                         .padding(.top, 10)
+
+                    Text("კომენტარები")
+                        .font(FontType.black.swiftUIFont(size: 16))
+                        .foregroundStyle(.white)
+                        .padding(.top, 24)
+
+                    if viewModel.isLoadingComments {
+                        ProgressView()
+                            .padding()
+                    } else if viewModel.comments.isEmpty {
+                        Text("კომენტარები არ არის")
+                            .font(FontType.light.swiftUIFont(size: 12))
+                            .foregroundStyle(.white.opacity(0.6))
+                            .padding(.top, 2)
+                    } else {
+                        VStack(alignment: .leading, spacing: 16) {
+                            ForEach(viewModel.comments) { comment in
+                                CommentCard(comment: comment, timeAgo: viewModel.timeAgo(from: comment.timestamp))
+                            }
+                        }
+                    }
+
+                    CommentTextField(
+                        text: $commentText,
+                        isDisabled: viewModel.isSendingComment,
+                        onSend: {
+                            Task {
+                                let success = await viewModel.addComment(articleId: article.id, text: commentText)
+                                if success { commentText = "" }
+                            }
+                        }
+                    )
+                    .padding(.top, 16)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 16)
                 .padding(.top, 20)
+                .padding(.bottom, 24)
             }
         }
         .onAppear {
-            viewModel.onDelete = {
-                onDelete?()
-            }
+            viewModel.onDelete = { onDelete?() }
+            viewModel.fetchComments(articleId: article.id)
         }
         .alert("ნამდვილად გინდა არტიკლის წაშლა?", isPresented: $viewModel.showDeleteConfirmation) {
             Button("კი", role: .destructive) {
@@ -87,6 +121,15 @@ struct ArticleDetailView: View {
                 }
             }
             Button("არა", role: .cancel) { }
+        }
+        .alert(Text(viewModel.alertTitle), isPresented: $viewModel.isAlertPresented) {
+            Button("კარგი", role: .cancel) {
+                viewModel.handleAlertOKTap()
+            }
+        } message: {
+            if let message = viewModel.alertMessage {
+                Text(message)
+            }
         }
     }
 }
