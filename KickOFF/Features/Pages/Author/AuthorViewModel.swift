@@ -176,7 +176,7 @@ final class AuthorViewModel: ObservableObject {
     }
     
     var displayedAuthors: [Author] {
-        Array(authors.prefix(3))
+        authors
     }
     
     var subscribedAuthors: [Author] {
