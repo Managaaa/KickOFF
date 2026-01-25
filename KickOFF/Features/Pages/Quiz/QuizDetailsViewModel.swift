@@ -126,7 +126,6 @@ class QuizDetailsViewModel: ObservableObject {
         selectedAnswer = answer
         showResult = true
         
-        // Track correct answers
         if isCorrectAnswer(answer) {
             correctAnswersCount += 1
         }

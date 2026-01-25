@@ -129,6 +129,10 @@ final class MainTabCoordinator: Coordinator {
         appearance.configureWithOpaqueBackground()
         appearance.shadowColor = .clear
         
+        // Set dark background color
+        let customBackground = UIColor(named: "customBackground") ?? UIColor.black
+        appearance.backgroundColor = customBackground
+        
         let customGreen = UIColor(named: "customGreen") ?? UIColor.systemGreen
         appearance.stackedLayoutAppearance.selected.iconColor = customGreen
         appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: customGreen]
