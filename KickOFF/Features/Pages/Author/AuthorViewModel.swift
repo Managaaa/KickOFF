@@ -8,10 +8,15 @@ final class AuthorViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var subscribedAuthorIds: Set<String> = []
     
-    private let userService = UserService.shared
-    private let authService = FirebaseAuthService.shared
-    
-    private init() {
+    private let userService: UserServiceProtocol
+    private let authService: AuthServiceProtocol
+
+    init(
+        userService: UserServiceProtocol = UserService.shared,
+        authService: AuthServiceProtocol = FirebaseAuthService.shared
+    ) {
+        self.userService = userService
+        self.authService = authService
         Task {
             await fetchAuthors()
             await loadSubscribedAuthors()
@@ -171,7 +176,7 @@ final class AuthorViewModel: ObservableObject {
     }
     
     var displayedAuthors: [Author] {
-        Array(authors.prefix(3))
+        authors
     }
     
     var subscribedAuthors: [Author] {

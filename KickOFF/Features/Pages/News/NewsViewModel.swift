@@ -8,14 +8,14 @@ class NewsViewModel: ObservableObject {
     @Published var selectedCategory: Interest?
     @Published var favoriteNewsIds: Set<String> = []
     
-    private let newsService: NewsService
-    private let interestService: InterestService
-    private let authService: FirebaseAuthService
+    private let newsService: NewsServiceProtocol
+    private let interestService: InterestServiceProtocol
+    private let authService: AuthServiceProtocol
     private var cancellables = Set<AnyCancellable>()
     
     private static let allCategory = Interest(id: "all", title: "ყველა", imageUrl: "")
     
-    init(newsService: NewsService = NewsService(), interestService: InterestService = InterestService(), authService: FirebaseAuthService = .shared) {
+    init(newsService: NewsServiceProtocol = NewsService(), interestService: InterestServiceProtocol = InterestService(), authService: AuthServiceProtocol = FirebaseAuthService.shared) {
         self.newsService = newsService
         self.interestService = interestService
         self.authService = authService
@@ -107,7 +107,7 @@ class NewsViewModel: ObservableObject {
         isLoading = true
         
         Task { [weak self] in
-            let allNews = await self?.newsService.fetchNews() ?? []
+            let allNews = await self?.newsService.fetchNews(limit: nil) ?? []
             
             await MainActor.run { [weak self] in
                 guard let self = self else { return }

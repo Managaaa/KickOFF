@@ -7,7 +7,13 @@ struct RegistrationView: View {
     
     let onLogin: () -> Void
     let onSuccess: (() -> Void)?
-    
+
+    init(viewModel: RegistrationViewModel, onLogin: @escaping () -> Void, onSuccess: (() -> Void)?) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+        self.onLogin = onLogin
+        self.onSuccess = onSuccess
+    }
+
     //MARK: - Body
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -83,7 +89,7 @@ struct RegistrationView: View {
                                 orBorderView()
                                 GoogleAndFacebookSignUp(onGoogleTapped: {
                                     viewModel.signInWithGoogle()
-                                }, onFacebookTapped: {})
+                                })
                                 
                                 HStack(spacing: 3) {
                                     Text("უკვე გაქვს ანგარიში?")

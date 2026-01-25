@@ -34,5 +34,5 @@ struct BestOfsCardView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(viewModel: HomeViewModel())
 }

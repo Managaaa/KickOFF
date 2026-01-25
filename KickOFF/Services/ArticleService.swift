@@ -1,15 +1,28 @@
 import FirebaseFirestore
 
-final class ArticleService {
+protocol ArticleServiceProtocol: AnyObject {
+    func createArticle(title: String, text: String, senderId: String, senderName: String, profileImageUrl: String, imageUrl: String?) async throws -> String
+    func fetchArticles() async throws -> [Article]
+    func searchArticles(query: String) async throws -> [Article]
+    func fetchUserArticles(userId: String) async throws -> [Article]
+    func likeArticle(articleId: String, userId: String) async throws
+    func unlikeArticle(articleId: String, userId: String) async throws
+    func deleteArticle(articleId: String) async throws
+    func fetchComments(articleId: String) async throws -> [Comment]
+    func addComment(articleId: String, senderId: String, senderName: String, profileImageUrl: String?, text: String) async throws -> String
+    func deleteComment(articleId: String, commentId: String) async throws
+}
+
+final class ArticleService: ArticleServiceProtocol {
     static let shared = ArticleService()
     private let db = Firestore.firestore()
 
     private init() {}
 
-    func createArticle(title: String, text: String, senderId: String, senderName: String, profileImageUrl: String) async throws -> String {
+    func createArticle(title: String, text: String, senderId: String, senderName: String, profileImageUrl: String, imageUrl: String? = nil) async throws -> String {
         let docRef = db.collection("articles").document()
 
-        try await docRef.setData([
+        var data: [String: Any] = [
             "title": title,
             "text": text,
             "senderId": senderId,
@@ -18,7 +31,13 @@ final class ArticleService {
             "timestamp": FieldValue.serverTimestamp(),
             "likes": 0,
             "likedBy": []
-        ])
+        ]
+        
+        if let imageUrl = imageUrl {
+            data["imageUrl"] = imageUrl
+        }
+
+        try await docRef.setData(data)
 
         return docRef.documentID
     }

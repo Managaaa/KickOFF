@@ -10,12 +10,14 @@ struct ReusableMainButton: View {
             Text(title)
                 .foregroundStyle(.white)
                 .font(FontType.bold.swiftUIFont(size: 14))
+                .frame(width: 265, height: 50)
                 .background(
                     Color.customGreen
-                        .frame(width: 265, height: 50)
                         .cornerRadius(10)
                 )
+                .contentShape(Rectangle())
         }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

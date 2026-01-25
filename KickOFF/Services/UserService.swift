@@ -2,12 +2,21 @@ import FirebaseFirestore
 import FirebaseAuth
 import Foundation
 
-final class UserService {
+protocol UserServiceProtocol: AnyObject {
+    func fetchAuthorsWithArticles() async throws -> [Author]
+    func subscribeToUser(authorId: String) async throws
+    func unsubscribeFromUser(authorId: String) async throws
+    func isSubscribedTo(authorId: String) async throws -> Bool
+}
+
+final class UserService: UserServiceProtocol {
     static let shared = UserService()
     private let db = Firestore.firestore()
-    private let articleService = ArticleService.shared
-    
-    private init() {}
+    private let articleService: ArticleServiceProtocol
+
+    init(articleService: ArticleServiceProtocol = ArticleService.shared) {
+        self.articleService = articleService
+    }
     
     func fetchAuthorsWithArticles() async throws -> [Author] {
         let articles = try await articleService.fetchArticles()

@@ -1,10 +1,11 @@
 import SwiftUI
 
 struct FavoritesView: View {
-    @StateObject private var viewModel = HomeViewModel()
+    @StateObject private var viewModel: HomeViewModel
     var onNewsTap: ((News, HomeViewModel?) -> Void)?
-    
-    init(onNewsTap: ((News, HomeViewModel?) -> Void)? = nil) {
+
+    init(viewModel: HomeViewModel, onNewsTap: ((News, HomeViewModel?) -> Void)? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel)
         self.onNewsTap = onNewsTap
     }
     

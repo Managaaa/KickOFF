@@ -2,12 +2,13 @@ import SwiftUI
 
 struct ArticleDetailView: View {
     let article: Article
-    @StateObject private var viewModel = ArticleViewModel()
+    @StateObject private var viewModel: ArticleViewModel
     var onDelete: (() -> Void)?
     @State private var commentText: String = ""
 
-    init(article: Article, onDelete: (() -> Void)? = nil) {
+    init(article: Article, viewModel: ArticleViewModel, onDelete: (() -> Void)? = nil) {
         self.article = article
+        _viewModel = StateObject(wrappedValue: viewModel)
         self.onDelete = onDelete
     }
 
@@ -29,6 +30,19 @@ struct ArticleDetailView: View {
                     Text(article.title)
                         .font(FontType.black.swiftUIFont(size: 20))
                         .foregroundStyle(.white)
+                    
+                    if let imageUrl = displayArticle.imageUrl, !imageUrl.isEmpty {
+                        KingfisherImageLoader.news(
+                            imageUrl: imageUrl,
+                            width: UIScreen.main.bounds.width - 32,
+                            height: nil,
+                            cornerRadius: 10,
+                            placeholder: Image(systemName: "photo")
+                        )
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: UIScreen.main.bounds.width - 32)
+                        .padding(.top, 8)
+                    }
                     
                     HStack(spacing: 5) {
                         Text(viewModel.timeAgo(from: displayArticle.timestamp))

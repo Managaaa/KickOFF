@@ -1,8 +1,13 @@
 import SwiftUI
 
 struct MyArticlesView: View {
+    @StateObject private var viewModel: ArticleViewModel
     var onArticleCardTap: ((Article) -> Void)?
-    @StateObject private var viewModel = ArticleViewModel()
+
+    init(viewModel: ArticleViewModel, onArticleCardTap: ((Article) -> Void)? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+        self.onArticleCardTap = onArticleCardTap
+    }
 
     var body: some View {
         ZStack {

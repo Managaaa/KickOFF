@@ -11,11 +11,18 @@ final class SearchViewModel: ObservableObject {
     @Published var isLoading: Bool = false
 
     private var cancellables = Set<AnyCancellable>()
-    private let articleService = ArticleService.shared
-    private let newsService = NewsService()
-    private let quizService = QuizService()
+    private let articleService: ArticleServiceProtocol
+    private let newsService: NewsServiceProtocol
+    private let quizService: QuizServiceProtocol
 
-    init() {
+    init(
+        articleService: ArticleServiceProtocol = ArticleService.shared,
+        newsService: NewsServiceProtocol = NewsService(),
+        quizService: QuizServiceProtocol = QuizService()
+    ) {
+        self.articleService = articleService
+        self.newsService = newsService
+        self.quizService = quizService
         $searchQuery
             .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
             .removeDuplicates()
@@ -40,7 +47,7 @@ final class SearchViewModel: ObservableObject {
         isLoading = true
         Task { [weak self] in
             guard let self else { return }
-            async let newsTask = newsService.fetchNews()
+            async let newsTask = newsService.fetchNews(limit: nil)
             async let bestOfTask = newsService.fetchBestOfNews()
             async let quizzesTask = quizService.fetchQuizzes()
             let (allNews, allBestOf, allQuizzes) = await (newsTask, bestOfTask, quizzesTask)

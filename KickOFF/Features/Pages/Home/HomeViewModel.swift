@@ -12,12 +12,12 @@ class HomeViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var favoriteNewsIds: Set<String> = []
     
-    private let newsService: NewsService
-    private let quizService: QuizService
-    private let authService: FirebaseAuthService
+    private let newsService: NewsServiceProtocol
+    private let quizService: QuizServiceProtocol
+    private let authService: AuthServiceProtocol
     private var cancellables = Set<AnyCancellable>()
     
-    init(newsService: NewsService = NewsService(), quizService: QuizService = QuizService(), authService: FirebaseAuthService = .shared) {
+    init(newsService: NewsServiceProtocol = NewsService(), quizService: QuizServiceProtocol = QuizService(), authService: AuthServiceProtocol = FirebaseAuthService.shared) {
         self.newsService = newsService
         self.quizService = quizService
         self.authService = authService
@@ -70,7 +70,7 @@ class HomeViewModel: ObservableObject {
         isLoading = true
         
         Task { [weak self] in
-            let news = await self?.newsService.fetchNews() ?? []
+            let news = await self?.newsService.fetchNews(limit: nil) ?? []
             
             await MainActor.run(body:  {
                 self?.news = news

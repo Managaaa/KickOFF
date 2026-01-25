@@ -1,13 +1,22 @@
 import SwiftUI
 
 struct SearchView: View {
-    @StateObject private var viewModel = SearchViewModel()
+    @StateObject private var viewModel: SearchViewModel
     var onNewsTap: ((News) -> Void)?
     var onBestOfNewsTap: ((BestOfNews) -> Void)?
     var onQuizTap: ((Quiz) -> Void)?
     var onArticleTap: ((Article) -> Void)?
     var onAuthorTap: ((Author) -> Void)?
-    
+
+    init(viewModel: SearchViewModel, onNewsTap: ((News) -> Void)? = nil, onBestOfNewsTap: ((BestOfNews) -> Void)? = nil, onQuizTap: ((Quiz) -> Void)? = nil, onArticleTap: ((Article) -> Void)? = nil, onAuthorTap: ((Author) -> Void)? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+        self.onNewsTap = onNewsTap
+        self.onBestOfNewsTap = onBestOfNewsTap
+        self.onQuizTap = onQuizTap
+        self.onArticleTap = onArticleTap
+        self.onAuthorTap = onAuthorTap
+    }
+
     var body: some View {
         ZStack {
             Color.customBackground

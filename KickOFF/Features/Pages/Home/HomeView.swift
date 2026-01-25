@@ -9,7 +9,7 @@ struct HomeView: View {
     var onSeeAllTap: (() -> Void)?
     var onAuthorCardTap: ((Author) -> Void)?
     
-    init(viewModel: HomeViewModel = HomeViewModel(), onBestOfNewsTap: ((BestOfNews) -> Void)? = nil, onNewsTap: ((News, HomeViewModel?) -> Void)? = nil, onQuizTap: ((Quiz) -> Void)? = nil, onSeeAllTap: (() -> Void)? = nil, onAuthorCardTap: ((Author) -> Void)? = nil) {
+    init(viewModel: HomeViewModel, onBestOfNewsTap: ((BestOfNews) -> Void)? = nil, onNewsTap: ((News, HomeViewModel?) -> Void)? = nil, onQuizTap: ((Quiz) -> Void)? = nil, onSeeAllTap: (() -> Void)? = nil, onAuthorCardTap: ((Author) -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.onBestOfNewsTap = onBestOfNewsTap
         self.onNewsTap = onNewsTap
@@ -196,5 +196,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(viewModel: HomeViewModel())
 }

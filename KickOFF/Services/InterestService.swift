@@ -1,6 +1,12 @@
 import FirebaseFirestore
 
-final class InterestService {
+protocol InterestServiceProtocol: AnyObject {
+    func fetchInterests() async -> [Interest]
+    func addUserInterest(uid: String, interestId: String) async throws
+    func removeUserInterest(uid: String, interestId: String) async throws
+}
+
+final class InterestService: InterestServiceProtocol {
     private let db = Firestore.firestore()
 
     func fetchInterests() async -> [Interest] {

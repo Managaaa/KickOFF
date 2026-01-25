@@ -2,9 +2,9 @@ import Foundation
 import UIKit
 
 class ProfileViewModel {
-    private let authService: FirebaseAuthService
-    private let interestService: InterestService
-    private let storageService: StorageService
+    private let authService: AuthServiceProtocol
+    private let interestService: InterestServiceProtocol
+    private let storageService: StorageServiceProtocol
     var currentUser: User?
     private var pendiongOperations: Int = 0
     
@@ -24,7 +24,7 @@ class ProfileViewModel {
     private(set) var interests: [Interest] = []
     private(set) var userInterests: [Interest] = []
     
-    init(authService: FirebaseAuthService = .shared, interestService: InterestService = InterestService(), storageService: StorageService = .shared) {
+    init(authService: AuthServiceProtocol = FirebaseAuthService.shared, interestService: InterestServiceProtocol = InterestService(), storageService: StorageServiceProtocol = StorageService.shared) {
         self.authService = authService
         self.interestService = interestService
         self.storageService = storageService

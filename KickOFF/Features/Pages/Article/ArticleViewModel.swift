@@ -1,10 +1,14 @@
 import Foundation
 import Combine
 import FirebaseAuth
+import FirebaseFirestore
+import UIKit
 
 final class ArticleViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var body: String = ""
+    @Published var selectedImage: UIImage? = nil
+    @Published var articleImageUrl: String? = nil
 
     @Published var articles: [Article] = []
     @Published var isLoading: Bool = false
@@ -27,15 +31,18 @@ final class ArticleViewModel: ObservableObject {
     var onSuccess: (() -> Void)?
     var onDelete: (() -> Void)?
 
-    private let authService: FirebaseAuthService
-    private let articleService: ArticleService
+    private let authService: AuthServiceProtocol
+    private let articleService: ArticleServiceProtocol
+    private let storageService: StorageServiceProtocol
 
     init(
-        authService: FirebaseAuthService = .shared,
-        articleService: ArticleService = .shared
+        authService: AuthServiceProtocol = FirebaseAuthService.shared,
+        articleService: ArticleServiceProtocol = ArticleService.shared,
+        storageService: StorageServiceProtocol = StorageService.shared
     ) {
         self.authService = authService
         self.articleService = articleService
+        self.storageService = storageService
         Task {
             await loadCurrentUserId()
         }
@@ -185,16 +192,36 @@ final class ArticleViewModel: ObservableObject {
                 return
             }
 
-            _ = try await articleService.createArticle(
-                title: trimmedTitle,
-                text: trimmedBody,
-                senderId: senderId,
-                senderName: currentUser.name,
-                profileImageUrl: currentUser.profileImageUrl ?? ""
-            )
+            var imageUrl: String? = nil
+            if let image = selectedImage {
+                let articleId = try await articleService.createArticle(
+                    title: trimmedTitle,
+                    text: trimmedBody,
+                    senderId: senderId,
+                    senderName: currentUser.name,
+                    profileImageUrl: currentUser.profileImageUrl ?? "",
+                    imageUrl: nil
+                )
+                
+                imageUrl = try await storageService.uploadArticleImage(image, articleId: articleId)
+                
+                let articleRef = Firestore.firestore().collection("articles").document(articleId)
+                try await articleRef.updateData(["imageUrl": imageUrl!])
+            } else {
+                _ = try await articleService.createArticle(
+                    title: trimmedTitle,
+                    text: trimmedBody,
+                    senderId: senderId,
+                    senderName: currentUser.name,
+                    profileImageUrl: currentUser.profileImageUrl ?? "",
+                    imageUrl: nil
+                )
+            }
 
             title = ""
             body = ""
+            selectedImage = nil
+            articleImageUrl = nil
             presentSuccessAndPreparePop(message: "")
         } catch {
             presentErrorAlert(message: "ცადეთ თავიდან")
@@ -255,6 +282,7 @@ final class ArticleViewModel: ObservableObject {
                     senderId: article.senderId,
                     senderName: article.senderName,
                     profileImageUrl: article.profileImageUrl,
+                    imageUrl: article.imageUrl,
                     timestamp: article.timestamp,
                     likes: max(0, article.likes - 1),
                     likedBy: updatedLikedBy
@@ -269,6 +297,7 @@ final class ArticleViewModel: ObservableObject {
                     senderId: article.senderId,
                     senderName: article.senderName,
                     profileImageUrl: article.profileImageUrl,
+                    imageUrl: article.imageUrl,
                     timestamp: article.timestamp,
                     likes: article.likes + 1,
                     likedBy: updatedLikedBy

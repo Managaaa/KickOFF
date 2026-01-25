@@ -1,8 +1,19 @@
 import FirebaseAuth
 import FirebaseFirestore
 import GoogleSignIn
+import UIKit
 
-final class FirebaseAuthService {
+protocol AuthServiceProtocol: AnyObject {
+    func register(name: String, email: String, password: String) async throws -> User
+    func login(email: String, password: String) async throws -> User
+    func signInWithGoogle(presentingViewController: UIViewController) async throws -> User
+    func logOut() throws
+    func updateProfile(name: String, email: String) async throws
+    func updateProfileImage(imageUrl: String) async throws
+    func getCurrentUser() async throws -> User?
+}
+
+final class FirebaseAuthService: AuthServiceProtocol {
     static let shared = FirebaseAuthService()
     private let auth = Auth.auth()
     private let db = Firestore.firestore()

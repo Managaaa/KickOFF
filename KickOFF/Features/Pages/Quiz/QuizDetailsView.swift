@@ -5,10 +5,10 @@ struct QuizDetailsView: View {
     var onFinish: (() -> Void)?
     @StateObject var viewModel: QuizDetailsViewModel
     
-    init(quiz: Quiz, onFinish: (() -> Void)? = nil) {
+    init(quiz: Quiz, viewModel: QuizDetailsViewModel, onFinish: (() -> Void)? = nil) {
         self.quiz = quiz
+        _viewModel = StateObject(wrappedValue: viewModel)
         self.onFinish = onFinish
-        _viewModel = StateObject(wrappedValue: QuizDetailsViewModel(quizId: quiz.id))
     }
     
     var body: some View {
@@ -74,6 +74,13 @@ struct QuizDetailsView: View {
         }
         .onDisappear {
             viewModel.saveProgress()
+        }
+        .alert("ქვიზის შედეგი", isPresented: $viewModel.showQuizResultAlert) {
+            Button("კარგი", role: .cancel) {
+                viewModel.showQuizResultAlert = false
+            }
+        } message: {
+            Text(viewModel.quizResultMessage)
         }
     }
 }

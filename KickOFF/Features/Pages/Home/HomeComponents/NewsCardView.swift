@@ -75,5 +75,5 @@ struct NewsCardView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(viewModel: HomeViewModel())
 }

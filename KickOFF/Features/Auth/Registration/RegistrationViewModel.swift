@@ -19,10 +19,10 @@ class RegistrationViewModel: ObservableObject {
     var onSuccess: (() -> Void)?
     var onLoadingStateChanged: ((Bool) -> Void)?
     
-    private let authService: FirebaseAuthService
+    private let authService: AuthServiceProtocol
     
     //MARK: - Init
-    init(authService: FirebaseAuthService = .shared) {
+    init(authService: AuthServiceProtocol = FirebaseAuthService.shared) {
         self.authService = authService
     }
     
@@ -97,7 +97,6 @@ class RegistrationViewModel: ObservableObject {
             } catch {
                 await MainActor.run {
                     self.onLoadingStateChanged?(false)
-                    //self.handleAuthError(error) არასაჭირო ალერტებს იწვევს იყოს დროებით
                 }
             }
         }
