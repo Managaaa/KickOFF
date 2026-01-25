@@ -83,7 +83,7 @@ struct RegistrationView: View {
                                 orBorderView()
                                 GoogleAndFacebookSignUp(onGoogleTapped: {
                                     viewModel.signInWithGoogle()
-                                }, onFacebookTapped: {})
+                                })
                                 
                                 HStack(spacing: 3) {
                                     Text("უკვე გაქვს ანგარიში?")
