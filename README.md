@@ -1,5 +1,13 @@
 # KickOFF
 
+
+![iOS](https://img.shields.io/badge/iOS-17.6%2B-blue)
+![Swift](https://img.shields.io/badge/Swift-5.9%2B-orange)
+![UIKit](https://img.shields.io/badge/UI-UIKit%20%2B%20SwiftUI-purple)
+![Architecture](https://img.shields.io/badge/Architecture-Coordinator%20%2B%20MVVM-success)
+![SPM](https://img.shields.io/badge/Dependency-SPM-black)
+![FireBase](https://img.shields.io/badge/DataBase-FireBase-brightgreen)
+
 ## About
 
 KickOFF is an iOS application designed to deliver comprehensive sports news and content to Georgian-speaking users. The application provides a platform for sports enthusiasts to stay updated with the latest news, read and write articles, test their knowledge through interactive quizzes, and follow their favorite sports authors. Built with a focus on user engagement and community interaction, KickOFF combines news aggregation, user-generated content, and educational quiz features to create a complete sports media experience.
