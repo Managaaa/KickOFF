@@ -75,5 +75,12 @@ struct QuizDetailsView: View {
         .onDisappear {
             viewModel.saveProgress()
         }
+        .alert("ქვიზის შედეგი", isPresented: $viewModel.showQuizResultAlert) {
+            Button("კარგი", role: .cancel) {
+                viewModel.showQuizResultAlert = false
+            }
+        } message: {
+            Text(viewModel.quizResultMessage)
+        }
     }
 }

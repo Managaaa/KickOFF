@@ -11,11 +11,14 @@ class QuizDetailsViewModel: ObservableObject {
     @Published var selectedAnswer: String? = nil
     @Published var showResult: Bool = false
     @Published var isLoading: Bool = false
+    @Published var showQuizResultAlert: Bool = false
+    @Published var quizResultMessage: String = ""
     
     private var shuffledAnswersForQuestions: [String: [String]] = [:]
     private let quizService: QuizServiceProtocol
     private let quizId: String
     private var hasCompletedQuiz: Bool = false
+    private var correctAnswersCount: Int = 0
     
     private var questionIdsKey: String { "quizProgress_questionIds_\(quizId)" }
     private var currentIndexKey: String { "quizProgress_currentIndex_\(quizId)" }
@@ -104,12 +107,29 @@ class QuizDetailsViewModel: ObservableObject {
     func markAsCompleted() {
         hasCompletedQuiz = true
         clearProgress()
+        showQuizResult()
+    }
+    
+    private func showQuizResult() {
+        if correctAnswersCount < 5 {
+            quizResultMessage = "უკეთესად შეგიძლია"
+        } else if correctAnswersCount < 10 {
+            quizResultMessage = "ყოჩაღ, კარგი შედეგია"
+        } else if correctAnswersCount >= 10 {
+            quizResultMessage = "გილოცავ, შენ მაქსიმალური შედეგი აიღე"
+        }
+        showQuizResultAlert = true
     }
     
     func selectAnswer(_ answer: String) {
         guard selectedAnswer == nil else { return }
         selectedAnswer = answer
         showResult = true
+        
+        // Track correct answers
+        if isCorrectAnswer(answer) {
+            correctAnswersCount += 1
+        }
     }
     
     func nextQuestion() {
