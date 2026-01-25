@@ -19,6 +19,7 @@ final class ArticleViewModel: ObservableObject {
     @Published var comments: [Comment] = []
     @Published var isLoadingComments: Bool = false
     @Published var isSendingComment: Bool = false
+    @Published var detailArticle: Article?
 
     var onSuccess: (() -> Void)?
     var onDelete: (() -> Void)?
@@ -228,59 +229,62 @@ final class ArticleViewModel: ObservableObject {
             guard let currentUser = try await authService.getCurrentUser() else {
                 return
             }
-            
+
+            if currentUserId == nil {
+                await loadCurrentUserId()
+            }
+
             let userId = currentUser.id ?? Auth.auth().currentUser?.uid ?? ""
             if userId.isEmpty {
                 return
             }
-            
+
             let isCurrentlyLiked = article.likedBy.contains(userId)
-            
+            var updatedLikedBy = article.likedBy
+            let updatedArticle: Article
+
+            if isCurrentlyLiked {
+                updatedLikedBy.removeAll { $0 == userId }
+                updatedArticle = Article(
+                    id: article.id,
+                    title: article.title,
+                    text: article.text,
+                    senderId: article.senderId,
+                    senderName: article.senderName,
+                    profileImageUrl: article.profileImageUrl,
+                    timestamp: article.timestamp,
+                    likes: max(0, article.likes - 1),
+                    likedBy: updatedLikedBy
+                )
+                try await articleService.unlikeArticle(articleId: article.id, userId: userId)
+            } else {
+                updatedLikedBy.append(userId)
+                updatedArticle = Article(
+                    id: article.id,
+                    title: article.title,
+                    text: article.text,
+                    senderId: article.senderId,
+                    senderName: article.senderName,
+                    profileImageUrl: article.profileImageUrl,
+                    timestamp: article.timestamp,
+                    likes: article.likes + 1,
+                    likedBy: updatedLikedBy
+                )
+                try await articleService.likeArticle(articleId: article.id, userId: userId)
+            }
+
             if let index = articles.firstIndex(where: { $0.id == article.id }) {
-                var updatedLikedBy = article.likedBy
-                let updatedArticle: Article
-
-                if isCurrentlyLiked {
-                    updatedLikedBy.removeAll { $0 == userId }
-                    updatedArticle = Article(
-                        id: article.id,
-                        title: article.title,
-                        text: article.text,
-                        senderId: article.senderId,
-                        senderName: article.senderName,
-                        profileImageUrl: article.profileImageUrl,
-                        timestamp: article.timestamp,
-                        likes: max(0, article.likes - 1),
-                        likedBy: updatedLikedBy
-                    )
-                    try await articleService.unlikeArticle(articleId: article.id, userId: userId)
-                } else {
-                    updatedLikedBy.append(userId)
-                    updatedArticle = Article(
-                        id: article.id,
-                        title: article.title,
-                        text: article.text,
-                        senderId: article.senderId,
-                        senderName: article.senderName,
-                        profileImageUrl: article.profileImageUrl,
-                        timestamp: article.timestamp,
-                        likes: article.likes + 1,
-                        likedBy: updatedLikedBy
-                    )
-                    try await articleService.likeArticle(articleId: article.id, userId: userId)
-                }
-
                 var updated = articles
                 updated[index] = updatedArticle
                 articles = updated
+            }
 
-                let amount = isCurrentlyLiked ? -1 : 1
-                AuthorViewModel.shared.updateAuthorTotalLikes(userId: article.senderId, amount: amount)
+            if detailArticle?.id == article.id {
+                detailArticle = updatedArticle
             }
-            
-            if currentUserId == nil {
-                await loadCurrentUserId()
-            }
+
+            let amount = isCurrentlyLiked ? -1 : 1
+            AuthorViewModel.shared.updateAuthorTotalLikes(userId: article.senderId, amount: amount)
         } catch {
             fetchArticles()
             print(error)

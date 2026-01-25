@@ -10,7 +10,15 @@ struct ArticleDetailView: View {
         self.article = article
         self.onDelete = onDelete
     }
-    
+
+    private var displayArticle: Article {
+        viewModel.detailArticle ?? article
+    }
+
+    private var displayArticleIsLiked: Bool {
+        viewModel.isArticleLiked(displayArticle)
+    }
+
     var body: some View {
         ZStack {
             Color.customBackground
@@ -23,7 +31,7 @@ struct ArticleDetailView: View {
                         .foregroundStyle(.white)
                     
                     HStack(spacing: 5) {
-                        Text(viewModel.timeAgo(from: article.timestamp))
+                        Text(viewModel.timeAgo(from: displayArticle.timestamp))
                             .font(FontType.light.swiftUIFont(size: 12))
                             .foregroundStyle(.white.opacity(0.8))
                         
@@ -31,11 +39,11 @@ struct ArticleDetailView: View {
                             .font(FontType.light.swiftUIFont(size: 12))
                             .foregroundStyle(.white.opacity(0.8))
                         
-                        Image(.heart)
+                        Image(displayArticleIsLiked ? .tappedHeart : .heart)
                             .resizable()
                             .frame(width: 12, height: 12)
                         
-                        Text("\(article.likes) მოწონება")
+                        Text("\(displayArticle.likes) მოწონება")
                             .font(FontType.light.swiftUIFont(size: 12))
                             .foregroundStyle(.white.opacity(0.8))
                     }
@@ -62,6 +70,16 @@ struct ArticleDetailView: View {
                                         .resizable()
                                         .frame(width: 20, height: 20)
                                 }
+                            }
+                            
+                            Button {
+                                Task {
+                                    await viewModel.toggleLike(displayArticle)
+                                }
+                            } label: {
+                                Image(displayArticleIsLiked ? .tappedHeart : .heart)
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
                             }
                         }
                     }
@@ -112,6 +130,7 @@ struct ArticleDetailView: View {
         }
         .onAppear {
             viewModel.onDelete = { onDelete?() }
+            viewModel.detailArticle = article
             viewModel.fetchComments(articleId: article.id)
         }
         .alert("ნამდვილად გინდა არტიკლის წაშლა?", isPresented: $viewModel.showDeleteConfirmation) {
